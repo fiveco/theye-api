@@ -1,0 +1,155 @@
+openapi: '3.0.2'
+info:
+  title: API THEye 
+  version: '0.1.0'
+servers:
+  - url: https://theye.ch/api/v1
+components:
+  schemas:
+    point:
+      type: object
+      properties:
+        timeStamp:
+          type: string
+          format: datetime
+          example: 2021-01-18T16:32:0Z
+        temperature:
+          type: number 
+          format: float 
+          example: 25.5
+        relativeHumidity:
+          type: number 
+          format: float 
+          example: 40.2 
+    log:
+      type: object
+      properties:
+        deviceUUID:
+          type: string 
+          format: uuid 
+        data:
+          type: array
+          items: 
+            $ref: '#/components/schemas/point'
+    elog:
+      type: object
+      properties:
+        deviceUUID:
+          type: string 
+          format: uuid 
+        edata:
+          type: string
+          format: binary
+    lockerKey:
+      type: object
+      properties:
+        deviceUUID:
+          type: string 
+          format: uuid 
+        lockerKey:
+          type: string
+          format: byte 
+          example: e10e15d2-eca5-41a2-a923-6ed896bf6cce
+paths:
+  /log:
+    get:
+      description: "Get log data of a device" 
+      parameters:
+      - name: deviceUUID
+        in: query
+        description: "UUID of the device"
+        required: true
+        schema:
+          type: string 
+          format: uuid 
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      - name: startDate
+        in: query
+        description: "Start date of data. ISO 8601"
+        required: false 
+        schema:
+          type: string
+          format: dateTime
+          example: 2021-01-18T16:32:0Z
+      - name: endDate 
+        in: query
+        description: "End date of data. ISO 8601"
+        schema:
+          type: string
+          format: dateTime
+          example: 2021-01-20T16:32:0Z
+      - name: pointQuantity
+        in: query
+        schema:
+          type: integer
+          format: int32
+          example: 1000 
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/log"
+        '204':
+          description: No data are available for this device.
+        '400':
+          description: Request is invalid.
+        '401':
+          description: You need to be authentificated.
+        '403':
+          description: You are not authorized to access this ressource.
+        '404':
+          description: Not found.
+  /elog:
+    post:
+      description: Post encrypted log
+      requestBody:
+        description: DeviceUUID and encrypted data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/elog' 
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Request is invalid.
+        '406':
+          description: Data are corrupted or do not belong to the device. 
+  /lockerKey:
+    get:
+      description: Get locker key of a device
+      parameters:
+      - name: deviceUUID
+        description: "UUID of the device"
+        in: query
+        required: true
+        schema:
+          type: string 
+          format: uuid 
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      - name: lockerToken
+        description: 128bit Token
+        in: query
+        required: true
+        schema:
+          type: string 
+          format: byte 
+          example: e10e15d2-eca5-41a2-a923-6ed896bf6cce
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/lockerKey' 
+        '400':
+          description: Request is invalid.
+        '401':
+          description: You need to be authentificated.
+        '403':
+          description: You are not authorized to access this ressource.
+        '404':
+          description: Not found.
