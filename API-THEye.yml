@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye 
-  version: '0.1.0'
+  version: '0.1.1'
 servers:
   - url: https://theye.ch/api/v1
 components:
@@ -151,5 +151,28 @@ paths:
           description: You need to be authentificated.
         '403':
           description: You are not authorized to access this ressource.
+        '404':
+          description: Not found.
+  /ownership:
+    put:
+      description: Claim ownership of the device. 
+      parameters:
+      - name: deviceUUID
+        description: "UUID of the device"
+        in: query
+        required: true
+        schema:
+          type: string 
+          format: uuid 
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        '200':
+          description: Ownership granted.
+        '202':
+          description: Ownership is claimed but actual owner has to accept the request.
+        '400':
+          description: Request is invalid.
+        '401':
+          description: Authentification needed.
         '404':
           description: Not found.
