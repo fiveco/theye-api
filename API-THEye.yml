@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye 
-  version: '0.1.1'
+  version: '0.1.2'
 servers:
   - url: https://theye.ch/api/v1
 components:
@@ -51,12 +51,12 @@ components:
           format: byte 
           example: e10e15d2-eca5-41a2-a923-6ed896bf6cce
 paths:
-  /log:
+  /log/{deviceUUID}:
     get:
       description: "Get log data of a device" 
       parameters:
       - name: deviceUUID
-        in: query
+        in: path 
         description: "UUID of the device"
         required: true
         schema:
@@ -118,13 +118,13 @@ paths:
           description: Request is invalid.
         '406':
           description: Data are corrupted or do not belong to the device. 
-  /lockerKey:
+  /lockerKey/{deviceUUID}:
     get:
       description: Get locker key of a device
       parameters:
       - name: deviceUUID
         description: "UUID of the device"
-        in: query
+        in: path 
         required: true
         schema:
           type: string 
@@ -153,13 +153,13 @@ paths:
           description: You are not authorized to access this ressource.
         '404':
           description: Not found.
-  /ownership:
+  /ownership/{deviceUUID}:
     put:
       description: Claim ownership of the device. 
       parameters:
       - name: deviceUUID
         description: "UUID of the device"
-        in: query
+        in: path 
         required: true
         schema:
           type: string 
