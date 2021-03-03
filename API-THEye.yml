@@ -1,111 +1,158 @@
 openapi: '3.0.2'
 info:
   title: API THEye 
-  version: '0.1.3'
+  version: '0.1.4'
 servers:
   - url: https://theye.ch/api/v1
 components:
   schemas:
-    point:
+    message:
       type: object
       properties:
-        timeStamp:
+        message:
+          type: string
+          format: string
+          example: Succes
+    device:
+      type: object
+      properties:
+        id:
+          type: string
+          format: hex48 
+          example: 0123456789AB 
+        name:
+          type: string
+          format: string
+          example: "THEye module"
+        owner:
+          type: integer 
+          example: 2
+        organization:
+          type: integer
+          example: 4
+        users:
+          type: array
+          format: integer
+          example: [1,3]
+        creation_date:
           type: string
           format: datetime
           example: 2021-01-18T16:32:0Z
-        temperature:
-          type: number 
-          format: float 
-          example: 25.5
-        relativeHumidity:
-          type: number 
-          format: float 
-          example: 40.2 
+        modification_date:
+          type: string
+          format: datetime
+          example: 2021-01-18T16:32:0Z
+    devices:
+      type: array
+      items: 
+        $ref: "#/components/schemas/device"
+    key:
+      type: object
+      properties:
+        id:
+          type: integer 
+          example: 1
+        aes_key:
+          type: string
+          format: hex128 
+          example: 00112233445566778899AABBCCDDEEFF 
+        validity:
+          type: string
+          format: boolean
+          example: true
+        creation_date:
+          type : string
+          format: datetime
+          example: 2021-01-18T16:32:0Z
+    keys:
+      type: array
+      items:
+        $ref: '#/components/schemas/key'
+      example:
+        - id : 1
+          aes_key : 00112233445566778899AABBCCDDEEFF
+          validity: true
+          creation_date : 2021-01-18T16:32:0Z
+        - id : 2
+          aes_key : FFEEDDCCBBAA99887766554433221100
+          validity: false 
+          creation_date : 2021-02-18T16:32:0Z
+
+    point:
+      type: object
+      properties:
+        i:
+          type: integer 
+          example: 10 
+        t:
+          type: integer 
+          example: 225 
+        h:
+          type: integer 
+          example: 452 
     log:
       type: object
       properties:
-        deviceUUID:
-          type: string 
-          format: uuid 
-        data:
+        device_id:
+          type: string
+          format: hex48 
+          example: 0123456789AB 
+        points:
           type: array
           items: 
             $ref: '#/components/schemas/point'
+          example:
+            - i : 10
+              t : 225
+              h : 452
+            - i : 70
+              t : 245
+              h : 462
     elog:
       type: object
       properties:
-        deviceUUID:
+        device_id:
           type: string 
-          format: uuid 
+          format: hex48 
+          example: 0123456789AB
+        key_id:
+          type: integer 
+          example: 1
+        start_date:
+          type: integer 
+          example: 123456
         edata:
           type: string
-          format: binary
-    lockKey:
+          format: base64 
+          example: d3As065hUfzeLue21P69HxIix373+FLWtoMDru6PFdy9ZYLlD6yRuwEJCYAjhATu6LiJp340n7Imhhmmp5Xbm9ws7tKbGyGkxgG7GeJ8fak=
+    lock-key:
       type: object
       properties:
-        deviceUUID:
+        device_id:
           type: string 
-          format: uuid 
-        lockKey:
+          format: hex48 
+          example: 0123456789AB
+        key:
           type: string
-          format: byte 
-          example: e10e15d2-eca5-41a2-a923-6ed896bf6cce
+          format: hex128 
+          example: F7F8687FE9A0D1D55305D251DABDB844 
 paths:
-  /log/{deviceUUID}:
+  /test/:
     get:
-      description: "Get log data of a device" 
-      parameters:
-      - name: deviceUUID
-        in: path 
-        description: "UUID of the device"
-        required: true
-        schema:
-          type: string 
-          format: uuid 
-          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-      - name: startDate
-        in: query
-        description: "Start date of data. ISO 8601"
-        required: false 
-        schema:
-          type: string
-          format: dateTime
-          example: 2021-01-18T16:32:0Z
-      - name: endDate 
-        in: query
-        description: "End date of data. ISO 8601"
-        schema:
-          type: string
-          format: dateTime
-          example: 2021-01-20T16:32:0Z
-      - name: pointQuantity
-        in: query
-        schema:
-          type: integer
-          format: int32
-          example: 1000 
+      description: "Test the API"
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/log"
-        '204':
-          description: No data are available for this device.
-        '400':
-          description: Request is invalid.
-        '401':
-          description: You need to be authentificated.
-        '403':
-          description: You are not authorized to access this ressource.
-        '404':
-          description: Not found.
-  /elog:
+                type: array
+                $ref: "#/components/schemas/message"
+  /elog/:
     post:
       description: Post encrypted log
       requestBody:
-        description: DeviceUUID and encrypted data
+        description: DeviceID and encrypted data
         required: true
         content:
           application/json:
@@ -118,56 +165,110 @@ paths:
           description: Request is invalid.
         '406':
           description: Data are corrupted or do not belong to the device. 
-  /lockKey/{deviceUUID}:
+  /devices/:
     get:
-      description: Get lock key of a device
-      parameters:
-      - name: deviceUUID
-        description: "UUID of the device"
-        in: path 
-        required: true
-        schema:
-          type: string 
-          format: uuid 
-          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-      - name: lockToken
-        description: 128bit Token
-        in: query
-        required: true
-        schema:
-          type: string 
-          format: byte 
-          example: e10e15d2-eca5-41a2-a923-6ed896bf6cce
+      description: "Retrieve all devices"
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/lockKey' 
-        '400':
-          description: Request is invalid.
-        '401':
-          description: You need to be authentificated.
-        '403':
-          description: You are not authorized to access this ressource.
-        '404':
-          description: Not found.
-  /ownership/{deviceUUID}:
-    put:
-      description: Claim ownership of the device. 
+                $ref: "#/components/schemas/devices"
+
+  /devices/{deviceID}/:
+    get:
+      description: "Retrieve a device" 
       parameters:
-      - name: deviceUUID
-        description: "UUID of the device"
+      - name: deviceID
+        in: path 
+        description: "ID of the device"
+        required: true
+        schema:
+          type: string 
+          format: hex48 
+          example: 0123456789AB 
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/device"
+  /{deviceID}/log/:
+    get:
+      description: Get log of the device
+      parameters:
+      - name: deviceID
+        in: path 
+        description: "ID of the device"
+        required: true
+        schema:
+          type: string 
+          format: hex48 
+          example: 0123456789AB 
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/log'
+
+  /{deviceID}/lock-key/:
+    get:
+      description: Get lock key of a device
+      parameters:
+      - name: deviceID
+        description: "ID of the device"
         in: path 
         required: true
         schema:
           type: string 
-          format: uuid 
-          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+          example: AD45AD64A54B
+      requestBody:
+        description: Key id and lock token 
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                key_id: 
+                    type: integer 
+                    example: 1
+                token:
+                    type: string
+                    format: hex128
+                    description: 128bit Token
+                    example: 00112233445566778899AABBCCDDEEFF
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/lock-key'
+
+  /{deviceID}/ownership/:
+    put:
+      description: Claim ownership of the device. 
+      parameters:
+      - name: deviceID
+        description: "ID of the device"
+        in: path 
+        required: true
+        schema:
+          type: string 
+          format: hex48 
+          example: AD45AD64A54B 
       responses:
         '200':
           description: Ownership granted.
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/message'
         '202':
           description: Ownership is claimed but actual owner has to accept the request.
         '400':
@@ -176,3 +277,32 @@ paths:
           description: Authentification needed.
         '404':
           description: Not found.
+  /keys/:
+    get:
+      description: "Retrieve all keys"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/keys"
+
+  /keys/{keyID}/:
+    get:
+      description: "Retrieve a specific key" 
+      parameters:
+      - name: keyID 
+        in: path 
+        description: "ID of the key"
+        required: true
+        schema:
+          type: integer 
+          example: 1 
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/key"
