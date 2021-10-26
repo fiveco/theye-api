@@ -1,9 +1,10 @@
 openapi: '3.0.2'
 info:
-  title: API THEye 
-  version: '0.1.5'
+  title: API THEye
+  version: '0.2.1'
 servers:
-  - url: https://theye.ch/api/v1
+  - url: https://theye.ch/api/v0
+
 components:
   schemas:
     message:
@@ -13,393 +14,118 @@ components:
           type: string
           format: string
           example: Succes
-    device:
+    password:
+      type: object
+      properties:
+        password:
+          type: string
+          example: SecretPa55word 
+        new_password:
+          type: string
+          example: NewSecretPa55word 
+    profile:
       type: object
       properties:
         id:
-          type: string
-          format: hex48 
-          example: 0123456789AB 
-        name:
-          type: string
-          format: string
-          example: "THEye module"
-        owner:
-          type: integer 
-          example: 2
-        organization:
           type: integer
-          example: 4
-        users:
-          type: array
-          format: integer
-          example: [1,3]
-        creation_date:
+          example: 314
+        username:
           type: string
-          format: datetime
-          example: 2021-01-18T16:32:0Z
-        modification_date:
+          example: awonderland
+        first_name:
           type: string
-          format: datetime
-          example: 2021-01-18T16:32:0Z
-    devices:
-      type: array
-      items: 
-        $ref: "#/components/schemas/device"
-    key:
+          example: Alice
+        last_name:
+          type: string
+          example: Wonderland
+        email:
+          type: string
+          format:  email
+          example: alice.wonderland@mail.com
+    api-version:
       type: object
       properties:
-        id:
-          type: integer 
-          example: 1
-        aes_key:
+        api_version:
           type: string
-          format: hex128 
-          example: 00112233445566778899AABBCCDDEEFF 
-        validity:
-          type: string
-          format: boolean
-          example: true
-        creation_date:
-          type : string
-          format: datetime
-          example: 2021-01-18T16:32:0Z
-    keys:
-      type: array
-      items:
-        $ref: '#/components/schemas/key'
-      example:
-        - id : 1
-          aes_key : 00112233445566778899AABBCCDDEEFF
-          validity: true
-          creation_date : 2021-01-18T16:32:0Z
-        - id : 2
-          aes_key : FFEEDDCCBBAA99887766554433221100
-          validity: false 
-          creation_date : 2021-02-18T16:32:0Z
-    organization:
-      type: object
-      properties:
-        name:
-          type: string
-          example: FiveCo
-        owner:
-          type: integer
-          example: 2
-        users:
-          type: array
-          format: integer
-          example: [1,3]
-    point:
-      type: object
-      properties:
-        i:
-          type: integer 
-          example: 10 
-        t:
-          type: integer 
-          example: 225 
-        h:
-          type: integer 
-          example: 452 
-    log:
-      type: object
-      properties:
-        device_id:
-          type: string
-          format: hex48 
-          example: 0123456789AB 
-        points:
-          type: array
-          items: 
-            $ref: '#/components/schemas/point'
-          example:
-            - i : 10
-              t : 225
-              h : 452
-            - i : 70
-              t : 245
-              h : 462
-    elog:
-      type: object
-      properties:
-        device_id:
-          type: string 
-          format: hex48 
-          example: 0123456789AB
-        key_id:
-          type: integer 
-          example: 1
-        start_date:
-          type: integer 
-          example: 123456
-        edata:
-          type: string
-          format: base64 
-          example: d3As065hUfzeLue21P69HxIix373+FLWtoMDru6PFdy9ZYLlD6yRuwEJCYAjhATu6LiJp340n7Imhhmmp5Xbm9ws7tKbGyGkxgG7GeJ8fak=
-    lock-key:
-      type: object
-      properties:
-        device_id:
-          type: string 
-          format: hex48 
-          example: 0123456789AB
-        key:
-          type: string
-          format: hex128 
-          example: F7F8687FE9A0D1D55305D251DABDB844 
+          format: semantic version number
+          example: '1.2.3'
+
+  securitySchemes:
+    theye_auth:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: 'https://theye.ch/o/authorize'
+          tokenUrl: 'https://theye.ch/o/token'
+          scopes:
+            'read': Can read 
+            'write': Can write 
 paths:
-  /test/:
+  /:
     get:
-      description: "Test the API"
+      description: Get THEye API version 
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: array
-                $ref: "#/components/schemas/message"
-  /elog/:
-    post:
-      description: Post encrypted log
-      requestBody:
-        description: DeviceID and encrypted data
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref : '#/components/schemas/elog' 
+                $ref : '#/components/schemas/api-version'
+
+        
+  /profile/:
+    get:
+      description: Get profile associated to the access token used.
+      security:
+        - theye_auth:
+          - read 
       responses:
         '200':
           description: OK
-        '400':
-          description: Request is invalid.
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-        '406':
-          description: Data are corrupted or do not belong to the device
-        '500':
-          description: Data processing error
-  /logs/:
-    get:
-      description: "Not implemented"
-      responses:
-        '404':
-          description: "Not implemented"
-  /devices/:
-    get:
-      description: "Retrieve all devices"
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/devices"
-  /devices/{deviceID}/:
-    get:
-      description: "Retrieve a device" 
-      parameters:
-      - name: deviceID
-        in: path 
-        description: "ID of the device"
-        required: true
-        schema:
-          type: string 
-          format: hex48 
-          example: 0123456789AB 
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/device"
-        '404':
-          description: Not Found
-  /devices/{deviceID}/log/:
-    get:
-      description: Get log of the device
-      parameters:
-      - name: deviceID
-        in: path 
-        description: "ID of the device"
-        required: true
-        schema:
-          type: string 
-          format: hex48 
-          example: 0123456789AB 
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref : '#/components/schemas/log'
-        '400':
-          description: Bad Request
-        '404':
-          description: Not Found
-  /devices/{deviceID}/lock-key/:
-    get:
-      description: Get lock key of a device
-      parameters:
-      - name: deviceID
-        description: "ID of the device"
-        in: path 
-        required: true
-        schema:
-          type: string 
-          example: AD45AD64A54B
-      requestBody:
-        description: Key id and lock token 
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                key_id: 
-                    type: integer 
-                    example: 1
-                token:
-                    type: string
-                    format: hex128
-                    description: 128bit Token
-                    example: 00112233445566778899AABBCCDDEEFF
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref : '#/components/schemas/lock-key'
-        '400':
-          description: Data not valid
-          content:
-            application/json:
-              schema:
-                $ref : '#/components/schemas/lock-key'
-        '403':
-          description: Validity of the device has expired
-          content:
-            application/json:
-              schema:
-                $ref : '#/components/schemas/lock-key'
-        '404':
-          description: The key id is not registered
-          content:
-            application/json:
-              schema:
-                $ref : '#/components/schemas/lock-key'
-  /devices/{deviceID}/ownership/:
-    put:
-      description: Claim ownership of the device. 
-      parameters:
-      - name: deviceID
-        description: "ID of the device"
-        in: path 
-        required: true
-        schema:
-          type: string 
-          format: hex48 
-          example: AD45AD64A54B 
-      responses:
-        '200':
-          description: Ownership granted.
-          content:
-            application/json:
-              schema:
-                $ref : '#/components/schemas/message'
-        '202':
-          description: Ownership is claimed but actual owner has to accept the request.
-        '400':
-          description: Request is invalid.
         '401':
-          description: Authentification needed.
-        '404':
-          description: Not found.
-  /keys/:
-    get:
-      description: "Retrieve all keys"
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/keys"
-    post:
-      description: "Insert a new key"
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/keys"
-        '400':
-          description: Bad Request
-  /keys/{keyID}/:
-    get:
-      description: "Retrieve a specific key" 
-      parameters:
-      - name: keyID 
-        in: path 
-        description: "ID of the key"
-        required: true
-        schema:
-          type: integer 
-          example: 1 
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/key"
-        '400':
-          description: Not Found
+          description: Unauthorized 
     put:
-      description: "Update a specific key" 
-      parameters:
-      - name: keyID 
-        in: path 
-        description: "ID of the key"
+      description: Update the profile associated to the access token used.
+      security:
+        - theye_auth:
+          - write 
+      requestBody:
+        description: Data of the profile to update
         required: true
-        schema:
-          type: integer 
-          example: 1 
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/profile' 
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/key"
+                $ref : '#/components/schemas/profile' 
+        '401':
+          description: Unauthorized 
         '400':
-          description: Bad Request
-        '404':
-          description: Not Found
-    delete:
-      description: "Delete a specific key" 
-      parameters:
-      - name: keyID 
-        in: path 
-        description: "ID of the key"
-        required: true
-        schema:
-          type: integer 
-          example: 1 
-      responses:
-        '200':
-          description: OK
+          description: Bad request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/key"
-        '404':
-          description: Not Found
+                $ref : '#/components/schemas/message' 
+
+  /profile/password/:
+    put:
+      description: Update the user password associated with the access token used.
+      security:
+        - theye_auth:
+          - write 
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized 
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/message' 
