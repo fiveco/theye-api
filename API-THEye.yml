@@ -1,19 +1,88 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.2.1'
+  version: '0.3.0'
 servers:
   - url: https://theye.ch/api/v0
 
 components:
   schemas:
-    message:
+    api-version:
       type: object
       properties:
-        message:
+        api_version:
+          type: string
+          format: semantic version number
+          example: '1.2.3'
+    detail:
+      type: object
+      properties:
+        detail:
           type: string
           format: string
-          example: Succes
+          example: Lorem ipsum. 
+    device:
+      type: object
+      properties:
+        id:
+          type: string 
+          format: hexadecimal
+          maxLength: 12 
+          minLength: 12 
+          example: 0123456789AB 
+          readOnly: true
+        creation_date:
+          type: string
+          format: iso-8601
+          example: 2021-01-18T16:32:10.000000Z
+          readOnly: true
+        modification_date:
+          type: string
+          format: iso-8601
+          example: 2021-01-18T16:32:10.000000Z
+          readOnly: true
+        name:
+          type: string
+          example: Device A
+        owner:
+          type: integer 
+          example: 1 
+          readOnly: true
+        is_active:
+          type: boolean
+          example: true
+          readOnly: true
+    devices:
+      type: array
+      items:
+        $ref: '#/components/schemas/device'
+    ownership-code:
+      type: object
+      properties:
+        code: 
+          type: string 
+          format: hexadecimal
+          maxLength: 32 
+          minLength: 32 
+          example: 00112233445566778899AABBCCDDEEFF 
+          readOnly: true
+        expires:
+          type: string
+          format: iso-8601
+          example: 2021-01-18T16:32:10.000000Z
+          readOnly: true
+    ownership-token:
+      type: object
+      properties:
+        key_id: 
+          type: integer
+          example: 314 
+        ownership_token:
+          type: string
+          format: hexadecimal
+          maxLength: 32 
+          minLength: 32 
+          example: 00112233445566778899AABBCCDDEEFF
     password:
       type: object
       properties:
@@ -42,13 +111,6 @@ components:
           type: string
           format:  email
           example: alice.wonderland@mail.com
-    api-version:
-      type: object
-      properties:
-        api_version:
-          type: string
-          format: semantic version number
-          example: '1.2.3'
 
   securitySchemes:
     theye_auth:
@@ -63,7 +125,7 @@ components:
 paths:
   /:
     get:
-      description: Get THEye API version 
+      description: Get THEye API version. 
       responses:
         '200':
           description: OK
@@ -71,11 +133,236 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/api-version'
-
-        
-  /profile/:
+  /devices/:
     get:
-      description: Get profile associated to the access token used.
+      description: Get all devices of the user.
+      security:
+        - theye_auth:
+          - read 
+      responses:
+        '200': 
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/devices' 
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden (user is inactive). 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/detail' 
+  /devices/{device-id}/:
+    get:
+      description: Get device.
+      parameters:
+        - name: device-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: hexadecimal
+            maxLength: 12 
+            minLength: 12 
+            example: 0123456789AB 
+      security:
+        - theye_auth:
+          - read 
+      responses:
+        '200': 
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/device' 
+        '401':
+          description: Unauthorized. 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/detail' 
+        '404':
+          description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/detail' 
+    put:
+      description: Put device.
+      parameters:
+        - name: device-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: hexadecimal
+            maxLength: 12 
+            minLength: 12 
+            example: 0123456789AB 
+      requestBody:
+        description: Data of the device to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/device' 
+      security:
+        - theye_auth:
+          - write 
+      responses:
+        '200': 
+          description: Ok, device updated 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/detail' 
+        '400':
+          description: Bad request, data format error. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/detail' 
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/detail' 
+        '404':
+          description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/detail' 
+  /devices/{device-id}/own:
+     put:
+      description: Own the device.
+      parameters:
+        - name: device-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: hexadecimal
+            maxLength: 12 
+            minLength: 12 
+            example: 0123456789AB 
+      requestBody:
+        description: Owneship token 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/ownership-token' 
+      security:
+        - theye_auth:
+          - write 
+      responses:
+        '200': 
+          description: Ok, onwership granted. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/detail' 
+        '201': 
+          description: Ok, onwership granted. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/detail' 
+        '400':
+          description: Bad request, data format error. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/detail' 
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/detail' 
+        '500':
+          description: Internal server error. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/detail' 
+  /devices/{device-id}/release:
+     put:
+      description: Release ownership of the device.
+      parameters:
+        - name: device-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: hexadecimal
+            maxLength: 12 
+            minLength: 12 
+            example: 0123456789AB 
+      security:
+        - theye_auth:
+          - write 
+      responses:
+        '200': 
+          description: Ok, onwership released. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/detail' 
+        '400':
+          description: Bad request, data format error. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/detail' 
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/detail' 
+        '404':
+          description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/detail' 
+  /ownership-code/: 
+    post:
+      description: Create and get an ownership code. 
+      security:
+        - theye_auth:
+          - write 
+      responses:
+        '201': 
+          description: Ok, onwership released. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/ownership-code' 
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/detail' 
+  /my-profile/:
+    get:
+      description: Get user profile.
       security:
         - theye_auth:
           - read 
@@ -85,7 +372,7 @@ paths:
         '401':
           description: Unauthorized 
     put:
-      description: Update the profile associated to the access token used.
+      description: Update the user profile.
       security:
         - theye_auth:
           - write 
@@ -110,11 +397,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/message' 
+                $ref : '#/components/schemas/detail' 
 
   /profile/password/:
     put:
-      description: Update the user password associated with the access token used.
+      description: Update the user password. 
       security:
         - theye_auth:
           - write 
@@ -128,4 +415,4 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/message' 
+                $ref : '#/components/schemas/detail' 
