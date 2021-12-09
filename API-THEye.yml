@@ -357,7 +357,7 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/detail' 
-  /my-profile/:
+  /profile/:
     get:
       description: Get user profile.
       security:
