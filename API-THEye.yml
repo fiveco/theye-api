@@ -1,9 +1,9 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.3.0'
+  version: '0.4.0'
 servers:
-  - url: https://theye.ch/api/v0
+  - url: https://backend.theye.ch/api/v0
 
 components:
   schemas:
@@ -110,15 +110,20 @@ components:
           example: alice.wonderland@mail.com
 
   securitySchemes:
-    theye_auth:
+    theye_oauth:
       type: oauth2
       flows:
         authorizationCode:
-          authorizationUrl: 'https://theye.ch/o/authorize'
-          tokenUrl: 'https://theye.ch/o/token'
+          authorizationUrl: 'https://backend.theye.ch/o/authorize'
+          tokenUrl: 'https://backend.theye.ch/o/token'
           scopes:
+            'openid': OpenId Connect scope
             'read': Can read 
             'write': Can write 
+    theye_oidc:
+      type: openIdConnect
+      openIdConnectUrl: 'https://backend.theye.ch/o/.well-known/openid-configuration'
+
 paths:
   /:
     get:
@@ -134,7 +139,7 @@ paths:
     get:
       description: Get all devices of the user.
       security:
-        - theye_auth:
+        - theye_oauth:
           - read 
       responses:
         '200': 
@@ -165,7 +170,7 @@ paths:
             minLength: 12 
             example: 0123456789AB 
       security:
-        - theye_auth:
+        - theye_oauth:
           - read 
       responses:
         '200': 
@@ -208,7 +213,7 @@ paths:
             schema:
               $ref : '#/components/schemas/device' 
       security:
-        - theye_auth:
+        - theye_oauth:
           - write 
       responses:
         '200': 
@@ -258,7 +263,7 @@ paths:
             schema:
               $ref : '#/components/schemas/ownership-token' 
       security:
-        - theye_auth:
+        - theye_oauth:
           - write 
       responses:
         '200': 
@@ -307,7 +312,7 @@ paths:
             minLength: 12 
             example: 0123456789AB 
       security:
-        - theye_auth:
+        - theye_oauth:
           - write 
       responses:
         '200': 
@@ -340,7 +345,7 @@ paths:
     post:
       description: Create and get an ownership code. 
       security:
-        - theye_auth:
+        - theye_oauth:
           - write 
       responses:
         '201': 
@@ -357,11 +362,11 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/detail' 
-  /my-profile/:
+  /profile/:
     get:
       description: Get user profile.
       security:
-        - theye_auth:
+        - theye_oauth:
           - read 
       responses:
         '200':
@@ -371,7 +376,7 @@ paths:
     put:
       description: Update the user profile.
       security:
-        - theye_auth:
+        - theye_oauth:
           - write 
       requestBody:
         description: Data of the profile to update
@@ -400,7 +405,7 @@ paths:
     put:
       description: Update the user password. 
       security:
-        - theye_auth:
+        - theye_oauth:
           - write 
       responses:
         '200':
