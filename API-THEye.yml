@@ -272,9 +272,9 @@ paths:
               schema:
                 $ref : '#/components/schemas/detail' 
 
-  /devices/{device-id}/lock-token/:
-    get:
-      description: Get the lock token of the device.
+  /devices/{device-id}/compute-lock-token:
+    put:
+      description: Compute and get the device lock token.
       parameters:
         - name: device-id
           in: path
