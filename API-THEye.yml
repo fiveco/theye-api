@@ -56,6 +56,34 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/device'
+    elog:
+      type: object
+      properties:
+        device_id:
+          type: string 
+          format: hexadecimal
+          maxLength: 12 
+          minLength: 12 
+          example: 0123456789AB 
+        edata:
+          type: string
+          format: base64url 
+          example: d3As065hUfzeLue21P69HxIix373+FLWtoMDru6PFdy9ZYLlD6yRuwEJCYAjhATu6LiJp340n7Imhhmmp5Xbm9ws7tKbGyGkxgG7GeJ8fak=
+        hash:
+          type: string 
+          format: hexadecimal
+          maxLength: 64 
+          minLength: 64 
+          example: 00112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF 
+        initialization_vector:
+          type: string 
+          format: hexadecimal
+          maxLength: 32 
+          minLength: 32 
+          example: 00112233445566778899AABBCCDDEEFF 
+        key_id:
+          type: integer 
+          example: 314 
     lock-code:
       type: object
       properties:
@@ -422,6 +450,29 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/detail' 
+  /elog/:
+    put:
+      description: Put encrypted log
+      requestBody:
+        description: Encrypted data 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/elog' 
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Request is invalid.
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '406':
+          description: Data are corrupted or do not belong to the device
+        '500':
+          description: Data processing error
   /ownership-code/: 
     post:
       description: Create and get an ownership code. 
