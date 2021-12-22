@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.5.1'
+  version: '0.5.2'
 servers:
   - url: https://backend.theye.ch/api/v0
 
@@ -487,7 +487,14 @@ paths:
       description: Update the user password. 
       security:
         - theye_oauth:
-          - write 
+          - write
+      requestBody:
+        description: Passwords 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/password' 
       responses:
         '200':
           description: OK
