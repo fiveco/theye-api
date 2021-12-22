@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.5.0'
+  version: '0.5.1'
 servers:
   - url: https://backend.theye.ch/api/v0
 
@@ -127,6 +127,7 @@ components:
         id:
           type: integer
           example: 314
+          readOnly: True
         first_name:
           type: string
           example: Alice
