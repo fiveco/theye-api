@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.5.2'
+  version: '0.6.0'
 servers:
   - url: https://backend.theye.ch/api/v0
 
