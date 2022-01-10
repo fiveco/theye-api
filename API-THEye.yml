@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.7.0-alpha'
+  version: '0.7.0-alpha.1'
 servers:
   - url: https://backend.theye.ch/api/v0
 
@@ -120,17 +120,33 @@ components:
           type: string
           format: hex48 
           example: 0123456789AB 
-        points:
+        time:
           type: array
           items: 
-            $ref: '#/components/schemas/point'
+            type: integer
+            description: Time in POSIX 
           example:
-            - i : 10
-              t : 225
-              h : 452
-            - i : 70
-              t : 245
-              h : 462
+            - 10
+            - 20 
+            - 30 
+        temperature:
+          type: array
+          items: 
+            type: integer
+            description: Temperature of the point (in 0.01 [°C]) 
+          example:
+            - 2500 
+            - 2510 
+            - 2490 
+        humidity:
+          type: array
+          items: 
+            type: integer
+            description: Humidity of the point (in 0.01 [%]) 
+          example:
+            - 5000 
+            - 5010 
+            - 4990 
     ownership-code:
       type: object
       properties:
@@ -167,21 +183,6 @@ components:
         new_password:
           type: string
           example: NewSecretPa55word 
-    point:
-      type: object
-      properties:
-        i:
-          description: Time Id of the point (to be defined)
-          type: integer 
-          example: 10 
-        t:
-          description: Temperature of the point (in 0.01 [°C]) 
-          type: integer 
-          example: 225 
-        h:
-          description: Humidity of the point (in 0.01 [%]) 
-          type: integer 
-          example: 452 
     profile:
       type: object
       properties:
@@ -384,7 +385,7 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/detail' 
-  /devices/{deviceID}/log/:
+  /devices/{device-id}/log/:
     get:
       description: Get log of the device
       security:
