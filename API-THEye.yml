@@ -561,6 +561,10 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/profile' 
         '401':
           description: Unauthorized 
     put:
@@ -581,7 +585,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/profile' 
+                $ref : '#/components/schemas/detail' 
         '401':
           description: Unauthorized 
         '400':
