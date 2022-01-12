@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.6.0'
+  version: '0.7.0'
 servers:
   - url: https://backend.theye.ch/api/v0
 
@@ -113,6 +113,40 @@ components:
           minLength: 48 
           example: 00112233445566778899AABBCCDDEEFF0123456789ABCDEF
           readOnly: true
+    log:
+      type: object
+      properties:
+        device_id:
+          type: string
+          format: hex48 
+          example: 0123456789AB 
+        time:
+          type: array
+          items: 
+            type: integer
+            description: Time in POSIX 
+          example:
+            - 10
+            - 20 
+            - 30 
+        temperature:
+          type: array
+          items: 
+            type: integer
+            description: Temperature of the point (in 0.01 [°C]) 
+          example:
+            - 2500 
+            - 2510 
+            - 2490 
+        humidity:
+          type: array
+          items: 
+            type: integer
+            description: Humidity of the point (in 0.01 [%]) 
+          example:
+            - 5000 
+            - 5010 
+            - 4990 
     ownership-code:
       type: object
       properties:
@@ -351,6 +385,31 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/detail' 
+  /devices/{device-id}/log/:
+    get:
+      description: Get log of the device
+      security:
+        - theye_oauth:
+          - read 
+      parameters:
+        - name: device-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: hexadecimal
+            maxLength: 12 
+            minLength: 12 
+            example: 0123456789AB 
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/log'
+        '404':
+          description: Not Found
   /devices/{device-id}/own:
      put:
       description: Own the device.
@@ -503,6 +562,10 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/profile' 
         '401':
           description: Unauthorized 
     put:
@@ -523,7 +586,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/profile' 
+                $ref : '#/components/schemas/detail' 
         '401':
           description: Unauthorized 
         '400':
