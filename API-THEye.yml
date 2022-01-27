@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.7.0'
+  version: '0.8.0'
 servers:
   - url: https://backend.theye.ch/api/v0
 
@@ -66,6 +66,34 @@ components:
           minLength: 12 
           example: 0123456789AB 
         edata:
+          type: string
+          format: base64url 
+          example: d3As065hUfzeLue21P69HxIix373+FLWtoMDru6PFdy9ZYLlD6yRuwEJCYAjhATu6LiJp340n7Imhhmmp5Xbm9ws7tKbGyGkxgG7GeJ8fak=
+        hash:
+          type: string 
+          format: hexadecimal
+          maxLength: 64 
+          minLength: 64 
+          example: 00112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF 
+        initialization_vector:
+          type: string 
+          format: hexadecimal
+          maxLength: 32 
+          minLength: 32 
+          example: 00112233445566778899AABBCCDDEEFF 
+        key_id:
+          type: integer 
+          example: 314 
+    encrypted_data:
+      type: object
+      properties:
+        device_id:
+          type: string 
+          format: hexadecimal
+          maxLength: 12 
+          minLength: 12 
+          example: 0123456789AB 
+        encrypted_data:
           type: string
           format: base64url 
           example: d3As065hUfzeLue21P69HxIix373+FLWtoMDru6PFdy9ZYLlD6yRuwEJCYAjhATu6LiJp340n7Imhhmmp5Xbm9ws7tKbGyGkxgG7GeJ8fak=
@@ -509,6 +537,25 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/detail' 
+  /device-info/:
+    post:
+      description: Post encrypted device info. 
+      requestBody:
+        description: Encrypted device info 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/encrypted_data' 
+      responses:
+        '201':
+          description: Created 
+        '400':
+          description: Request is invalid.
+        '409':
+          description: Device info data allready posted.
+        '500':
+          description: Data processing error
   /elog/:
     put:
       description: Put encrypted log
