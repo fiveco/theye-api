@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.8.0'
+  version: '0.9.0'
 servers:
   - url: https://backend.theye.ch/api/v0
 
@@ -48,14 +48,125 @@ components:
           type: integer 
           example: 1 
           readOnly: true
+        type:
+          type: integer
+          example: 10
+          readOnly: true
+        model:
+          type: integer
+          example: 11
+          readOnly: true
+        hardware:
+          type: string
+          example: 2.3
+          readOnly: True
         is_active:
           type: boolean
           example: true
           readOnly: true
+        device_info:
+          type: object
+          readOnly: true
+          properties:
+            creation_date:
+              type: string
+              format: iso-8601
+              example: 2021-01-18T16:32:10.000000Z
+              readOnly: true
+            info:
+              type: object
+              readOnly: true
+              properties:
+                info_version:
+                  type: integer
+                  example: 0
+                type:
+                  type: integer
+                  example: 10
+                model:
+                  type: integer
+                  example: 11
+                firmware:
+                  type: string
+                  example: 1.2
+                hardware:
+                  type: string
+                  example: 2.3
+                device_id:
+                  type: string 
+                  format: hexadecimal
+                  maxLength: 12 
+                  minLength: 12 
+                  example: 0123456789AB 
+                time_id:
+                  type: integer
+                  example: "123456"
+                local_name:
+                  type: string
+                  maxLength: 16
+                  example: Kitchen
+                battery_voltage:
+                  type: integer
+                  description: Battery voltage in 1/65536 [V]
+                  example: "196608"
+                log_interval:
+                  type: object
+                  properties:
+                    interval:
+                      type: integer 
+                      description: Interval time in [s]
+                      example: 10
+                    stop_recording:
+                      type: boolean
+                      example: false
+                    stop_memory_full:
+                      type: boolean
+                      example: true
+                limits:
+                  type: object
+                  properties:
+                    thresholds:
+                      type: object
+                      properties:
+                        lowest_temperature:
+                          type: integer
+                          description: Temperature in 0.01 [°C] 
+                        highest_temperature:
+                          type: integer
+                          description: Temperature in 0.01 [°C]
+                        lowest_humidity:
+                          type: integer
+                          description: Humidity in 0.01 [%]
+                        highest_humidity:
+                          type: integer
+                          description: Humidity in 0.01 [%]
+                    alerts:
+                      type: object
+                      properties:
+                        current_temperature:
+                          type: boolean
+                        past_temperature:
+                          type: boolean
+                        past_temperature_resettable:
+                          type: boolean
+                        current_humidity:
+                          type: boolean
+                        past_humidity:
+                          type: boolean
+                        past_humidity_resettable:
+                          type: boolean
+                    config:
+                      type: object
+                      properties:
+                        hidden:
+                          type: boolean
+                        tested:
+                          type: boolean
     devices:
       type: array
       items:
         $ref: '#/components/schemas/device'
+            
     elog:
       type: object
       properties:
