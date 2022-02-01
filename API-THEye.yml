@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.9.0'
+  version: '0.10.0'
 servers:
   - url: https://backend.theye.ch/api/v0
 
@@ -73,6 +73,10 @@ components:
               format: iso-8601
               example: 2021-01-18T16:32:10.000000Z
               readOnly: true
+            api_version:
+              type: string
+              format: semantic version number
+              example: '1.2.3'
             info:
               type: object
               readOnly: true
@@ -107,8 +111,8 @@ components:
                   example: Kitchen
                 battery_voltage:
                   type: integer
-                  description: Battery voltage in 1/65536 [V]
-                  example: "196608"
+                  description: Battery voltage in mV [V]
+                  example: "3300"
                 log_interval:
                   type: object
                   properties:
