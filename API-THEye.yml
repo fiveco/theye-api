@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.10.0'
+  version: '0.11.0'
 servers:
   - url: https://backend.theye.ch/api/v0
 
@@ -333,16 +333,21 @@ components:
           type: integer
           example: 314
           readOnly: True
+        email:
+          type: string
+          format:  email
+          example: alice.wonderland@mail.com
         first_name:
           type: string
           example: Alice
         last_name:
           type: string
           example: Wonderland
-        email:
+        unicode_locale_id:
           type: string
-          format:  email
-          example: alice.wonderland@mail.com
+          format: unicode locale identifier
+          description: https://unicode.org/reports/tr35/
+          example: 'en-US'
 
   securitySchemes:
     theye_oauth:
