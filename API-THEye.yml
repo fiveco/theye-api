@@ -26,7 +26,7 @@ components:
       properties:
         id:
           type: string 
-          format: hexadecimal
+          format: base16
           maxLength: 12 
           minLength: 12 
           example: 0123456789AB 
@@ -98,7 +98,7 @@ components:
                   example: 2.3
                 device_id:
                   type: string 
-                  format: hexadecimal
+                  format: base16
                   maxLength: 12 
                   minLength: 12 
                   example: 0123456789AB 
@@ -176,7 +176,7 @@ components:
       properties:
         device_id:
           type: string 
-          format: hexadecimal
+          format: base16
           maxLength: 12 
           minLength: 12 
           example: 0123456789AB 
@@ -186,13 +186,13 @@ components:
           example: d3As065hUfzeLue21P69HxIix373+FLWtoMDru6PFdy9ZYLlD6yRuwEJCYAjhATu6LiJp340n7Imhhmmp5Xbm9ws7tKbGyGkxgG7GeJ8fak=
         hash:
           type: string 
-          format: hexadecimal
+          format: base16
           maxLength: 64 
           minLength: 64 
           example: 00112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF 
         initialization_vector:
           type: string 
-          format: hexadecimal
+          format: base16
           maxLength: 32 
           minLength: 32 
           example: 00112233445566778899AABBCCDDEEFF 
@@ -204,7 +204,7 @@ components:
       properties:
         device_id:
           type: string 
-          format: hexadecimal
+          format: base16
           maxLength: 12 
           minLength: 12 
           example: 0123456789AB 
@@ -214,13 +214,13 @@ components:
           example: d3As065hUfzeLue21P69HxIix373+FLWtoMDru6PFdy9ZYLlD6yRuwEJCYAjhATu6LiJp340n7Imhhmmp5Xbm9ws7tKbGyGkxgG7GeJ8fak=
         hash:
           type: string 
-          format: hexadecimal
+          format: base16
           maxLength: 64 
           minLength: 64 
           example: 00112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF 
         initialization_vector:
           type: string 
-          format: hexadecimal
+          format: base16
           maxLength: 32 
           minLength: 32 
           example: 00112233445566778899AABBCCDDEEFF 
@@ -235,7 +235,7 @@ components:
           example: 314 
         lock_code: 
           type: string 
-          format: hexadecimal
+          format: base16
           maxLength: 16 
           minLength: 16 
           example: 0123456789ABCDEF
@@ -244,14 +244,14 @@ components:
       properties:
         device_id:
           type: string 
-          format: hexadecimal
+          format: base16
           maxLength: 12 
           minLength: 12 
           example: 0123456789AB 
           readOnly: true
         lock_token: 
           type: string
-          format: hexadecimal
+          format: base16
           maxLength: 48 
           minLength: 48 
           example: 00112233445566778899AABBCCDDEEFF0123456789ABCDEF
@@ -295,7 +295,7 @@ components:
       properties:
         code: 
           type: string 
-          format: hexadecimal
+          format: base16
           maxLength: 32 
           minLength: 32 
           example: 00112233445566778899AABBCCDDEEFF 
@@ -313,7 +313,7 @@ components:
           example: 314 
         ownership_token:
           type: string
-          format: hexadecimal
+          format: base16
           maxLength: 32 
           minLength: 32 
           example: 00112233445566778899AABBCCDDEEFF
@@ -405,7 +405,7 @@ paths:
           required: true
           schema:
             type: string 
-            format: hexadecimal
+            format: base16
             maxLength: 12 
             minLength: 12 
             example: 0123456789AB 
@@ -441,7 +441,7 @@ paths:
           required: true
           schema:
             type: string 
-            format: hexadecimal
+            format: base16
             maxLength: 12 
             minLength: 12 
             example: 0123456789AB 
@@ -492,7 +492,7 @@ paths:
           required: true
           schema:
             type: string 
-            format: hexadecimal
+            format: base16
             maxLength: 12 
             minLength: 12 
             example: 0123456789AB 
@@ -545,7 +545,7 @@ paths:
           required: true
           schema:
             type: string 
-            format: hexadecimal
+            format: base16
             maxLength: 12 
             minLength: 12 
             example: 0123456789AB 
@@ -567,7 +567,7 @@ paths:
           required: true
           schema:
             type: string 
-            format: hexadecimal
+            format: base16
             maxLength: 12 
             minLength: 12 
             example: 0123456789AB 
@@ -623,7 +623,7 @@ paths:
           required: true
           schema:
             type: string 
-            format: hexadecimal
+            format: base16
             maxLength: 12 
             minLength: 12 
             example: 0123456789AB 
