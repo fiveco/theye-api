@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.11.0'
+  version: '0.12.0'
 servers:
   - url: https://backend.theye.ch/api/v0
 
@@ -14,19 +14,29 @@ components:
           type: string
           format: semantic version number
           example: '1.2.3'
-    detail:
+    status:
       type: object
       properties:
-        detail:
-          type: string
-          format: string
-          example: Lorem ipsum. 
+        status:
+          type: object
+          properties:
+            code:
+              type: string
+              example: 400-000
+            name:
+              type: string
+              format: string
+              example: STATUS_NAME 
+            description:
+              type: string
+              format: string
+              example: Lorem ipsum. 
     device:
       type: object
       properties:
         id:
           type: string 
-          format: hexadecimal
+          format: base16
           maxLength: 12 
           minLength: 12 
           example: 0123456789AB 
@@ -98,7 +108,7 @@ components:
                   example: 2.3
                 device_id:
                   type: string 
-                  format: hexadecimal
+                  format: base16
                   maxLength: 12 
                   minLength: 12 
                   example: 0123456789AB 
@@ -176,7 +186,7 @@ components:
       properties:
         device_id:
           type: string 
-          format: hexadecimal
+          format: base16
           maxLength: 12 
           minLength: 12 
           example: 0123456789AB 
@@ -186,13 +196,13 @@ components:
           example: d3As065hUfzeLue21P69HxIix373+FLWtoMDru6PFdy9ZYLlD6yRuwEJCYAjhATu6LiJp340n7Imhhmmp5Xbm9ws7tKbGyGkxgG7GeJ8fak=
         hash:
           type: string 
-          format: hexadecimal
+          format: base16
           maxLength: 64 
           minLength: 64 
           example: 00112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF 
         initialization_vector:
           type: string 
-          format: hexadecimal
+          format: base16
           maxLength: 32 
           minLength: 32 
           example: 00112233445566778899AABBCCDDEEFF 
@@ -204,7 +214,7 @@ components:
       properties:
         device_id:
           type: string 
-          format: hexadecimal
+          format: base16
           maxLength: 12 
           minLength: 12 
           example: 0123456789AB 
@@ -214,13 +224,13 @@ components:
           example: d3As065hUfzeLue21P69HxIix373+FLWtoMDru6PFdy9ZYLlD6yRuwEJCYAjhATu6LiJp340n7Imhhmmp5Xbm9ws7tKbGyGkxgG7GeJ8fak=
         hash:
           type: string 
-          format: hexadecimal
+          format: base16
           maxLength: 64 
           minLength: 64 
           example: 00112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF 
         initialization_vector:
           type: string 
-          format: hexadecimal
+          format: base16
           maxLength: 32 
           minLength: 32 
           example: 00112233445566778899AABBCCDDEEFF 
@@ -235,7 +245,7 @@ components:
           example: 314 
         lock_code: 
           type: string 
-          format: hexadecimal
+          format: base16
           maxLength: 16 
           minLength: 16 
           example: 0123456789ABCDEF
@@ -244,14 +254,14 @@ components:
       properties:
         device_id:
           type: string 
-          format: hexadecimal
+          format: base16
           maxLength: 12 
           minLength: 12 
           example: 0123456789AB 
           readOnly: true
         lock_token: 
           type: string
-          format: hexadecimal
+          format: base16
           maxLength: 48 
           minLength: 48 
           example: 00112233445566778899AABBCCDDEEFF0123456789ABCDEF
@@ -295,7 +305,7 @@ components:
       properties:
         code: 
           type: string 
-          format: hexadecimal
+          format: base16
           maxLength: 32 
           minLength: 32 
           example: 00112233445566778899AABBCCDDEEFF 
@@ -313,7 +323,7 @@ components:
           example: 314 
         ownership_token:
           type: string
-          format: hexadecimal
+          format: base16
           maxLength: 32 
           minLength: 32 
           example: 00112233445566778899AABBCCDDEEFF
@@ -391,11 +401,11 @@ paths:
         '401':
           description: Unauthorized.
         '403':
-          description: Forbidden (user is inactive). 
+          description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/detail' 
+                $ref : '#/components/schemas/status' 
   /devices/{device-id}/:
     get:
       description: Get device.
@@ -405,7 +415,7 @@ paths:
           required: true
           schema:
             type: string 
-            format: hexadecimal
+            format: base16
             maxLength: 12 
             minLength: 12 
             example: 0123456789AB 
@@ -421,18 +431,24 @@ paths:
                 $ref : '#/components/schemas/device' 
         '401':
           description: Unauthorized. 
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/detail' 
+                $ref : '#/components/schemas/status' 
         '404':
           description: Not found. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/detail' 
+                $ref : '#/components/schemas/status' 
     put:
       description: Put device.
       parameters:
@@ -441,7 +457,7 @@ paths:
           required: true
           schema:
             type: string 
-            format: hexadecimal
+            format: base16
             maxLength: 12 
             minLength: 12 
             example: 0123456789AB 
@@ -461,27 +477,27 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/detail' 
+                $ref : '#/components/schemas/device' 
+        '401':
+          description: Unauthorized. 
         '400':
-          description: Bad request, data format error. 
+          description: Bad request. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/detail' 
-        '401':
-          description: Unauthorized.
+                $ref : '#/components/schemas/status' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/detail' 
+                $ref : '#/components/schemas/status' 
         '404':
           description: Not found. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/detail' 
+                $ref : '#/components/schemas/status' 
 
   /devices/{device-id}/compute-lock-token:
     put:
@@ -492,7 +508,7 @@ paths:
           required: true
           schema:
             type: string 
-            format: hexadecimal
+            format: base16
             maxLength: 12 
             minLength: 12 
             example: 0123456789AB 
@@ -513,26 +529,32 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/lock-token' 
+        '401':
+          description: Unauthorized. 
         '400':
-          description: Bad request, data format error. 
+          description: Bad request. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/detail' 
-        '401':
-          description: Unauthorized.
+                $ref : '#/components/schemas/status' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/detail' 
+                $ref : '#/components/schemas/status' 
+        '404':
+          description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
         '500':
           description: Internal server error. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/detail' 
+                $ref : '#/components/schemas/status' 
   /devices/{device-id}/log/:
     get:
       description: Get log of the device
@@ -545,7 +567,7 @@ paths:
           required: true
           schema:
             type: string 
-            format: hexadecimal
+            format: base16
             maxLength: 12 
             minLength: 12 
             example: 0123456789AB 
@@ -556,8 +578,32 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/log'
+        '401':
+          description: Unauthorized. 
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
         '404':
-          description: Not Found
+          description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '500':
+          description: Internal server error. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
   /devices/{device-id}/own:
      put:
       description: Own the device.
@@ -567,7 +613,7 @@ paths:
           required: true
           schema:
             type: string 
-            format: hexadecimal
+            format: base16
             maxLength: 12 
             minLength: 12 
             example: 0123456789AB 
@@ -587,33 +633,39 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/detail' 
+                $ref : '#/components/schemas/status' 
         '201': 
-          description: Ok, ownership granted. 
+          description: Ok, ownership granted and device created. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/detail' 
-        '400':
-          description: Bad request, data format error. 
-          content:
-            application/json:
-              schema:
-                $ref : '#/components/schemas/detail' 
+                $ref : '#/components/schemas/status' 
         '401':
-          description: Unauthorized.
+          description: Unauthorized. 
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/detail' 
+                $ref : '#/components/schemas/status' 
+        '404':
+          description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
         '500':
           description: Internal server error. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/detail' 
+                $ref : '#/components/schemas/status' 
   /devices/{device-id}/release:
      put:
       description: Release ownership of the device.
@@ -623,7 +675,7 @@ paths:
           required: true
           schema:
             type: string 
-            format: hexadecimal
+            format: base16
             maxLength: 12 
             minLength: 12 
             example: 0123456789AB 
@@ -636,27 +688,33 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/detail' 
+                $ref : '#/components/schemas/status' 
+        '401':
+          description: Unauthorized. 
         '400':
-          description: Bad request, data format error. 
+          description: Bad request. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/detail' 
-        '401':
-          description: Unauthorized.
+                $ref : '#/components/schemas/status' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/detail' 
+                $ref : '#/components/schemas/status' 
         '404':
           description: Not found. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/detail' 
+                $ref : '#/components/schemas/status' 
+        '500':
+          description: Internal server error. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
   /device-info/:
     post:
       description: Post encrypted device info. 
@@ -670,12 +728,40 @@ paths:
       responses:
         '201':
           description: Created 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
         '400':
-          description: Request is invalid.
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '404':
+          description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
         '409':
-          description: Device info data allready posted.
+          description: Conflict.
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
         '500':
-          description: Data processing error
+          description: Internal server error. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
   /elog/:
     put:
       description: Put encrypted log
@@ -689,16 +775,34 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
         '400':
-          description: Request is invalid.
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
         '403':
-          description: Forbidden
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
         '404':
-          description: Not Found
-        '406':
-          description: Data are corrupted or do not belong to the device
+          description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
         '500':
-          description: Data processing error
+          description: Internal server error. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
   /ownership-code/: 
     post:
       description: Create and get an ownership code. 
@@ -707,7 +811,7 @@ paths:
           - write 
       responses:
         '201': 
-          description: Ok, ownership released. 
+          description: Ok, ownership code created. 
           content:
             application/json:
               schema:
@@ -719,7 +823,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/detail' 
+                $ref : '#/components/schemas/status' 
   /profile/:
     get:
       description: Get user profile.
@@ -735,6 +839,12 @@ paths:
                 $ref : '#/components/schemas/profile' 
         '401':
           description: Unauthorized 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
     put:
       description: Update the user profile.
       security:
@@ -753,7 +863,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/detail' 
+                $ref : '#/components/schemas/profile' 
         '401':
           description: Unauthorized 
         '400':
@@ -761,7 +871,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/detail' 
+                $ref : '#/components/schemas/status' 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
 
   /profile/password/:
     put:
@@ -779,6 +895,10 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
         '401':
           description: Unauthorized 
         '400':
@@ -786,4 +906,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/detail' 
+                $ref : '#/components/schemas/status' 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
