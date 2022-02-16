@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.12.0'
+  version: '0.13.0'
 servers:
   - url: https://backend.theye.ch/api/v0
 
@@ -358,6 +358,56 @@ components:
           format: unicode locale identifier
           description: https://unicode.org/reports/tr35/
           example: 'en-US'
+    synchronization-nonce:
+      type: object
+      properties:
+        nonce:
+          type: string 
+          format: base16
+          maxLength: 24 
+          minLength: 24 
+          example: 00112233445566778899AABB
+          readOnly: true
+        expires:
+          type: string
+          format: iso-8601
+          example: 2021-01-18T16:32:10.000000Z
+          readOnly: true
+    synchronization-code:
+      type: object
+      properties:
+        device_id:
+          type: string 
+          format: base16
+          maxLength: 12 
+          minLength: 12 
+          example: 0123456789AB 
+        key_id:
+          type: integer
+          example: 314 
+        synchronization_code: 
+          type: string 
+          format: base16 
+          maxLength: 32 
+          minLength: 32 
+          example: 00112233445566778899AABBCCDDEEFF
+    synchronization-token:
+      type: object
+      properties:
+        device_id:
+          type: string 
+          format: base16
+          maxLength: 12 
+          minLength: 12 
+          example: 0123456789AB 
+          readOnly: true
+        synchronization_token: 
+          type: string
+          format: base16 
+          maxLength: 48 
+          minLength: 48 
+          example: 00112233445566778899AABBCCDDEEFF0123456789ABCDEF
+          readOnly: true
 
   securitySchemes:
     theye_oauth:
@@ -909,6 +959,74 @@ paths:
                 $ref : '#/components/schemas/status' 
         '403':
           description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+  /synchronization-nonce/:
+    post:
+      description: Get server nonce for server-device time synchronization. 
+      responses:
+        '201':
+          description: Created. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/synchronization-nonce' 
+
+  /synchronization-points/:
+     post:
+      description:  Create a server-device time synchronization point. 
+      parameters:
+        - name: device-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: base16 
+            maxLength: 12 
+            minLength: 12 
+            example: 0123456789AB 
+      requestBody:
+        description: Synchronization code 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/synchronization-code' 
+      responses:
+        '201':
+          description: Created 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/synchronization-token' 
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '404':
+          description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '409':
+          description: Conflict.
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '500':
+          description: Internal server error. 
           content:
             application/json:
               schema:
