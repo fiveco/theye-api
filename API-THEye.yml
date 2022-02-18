@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.13.0'
+  version: '0.14.0'
 servers:
   - url: https://backend.theye.ch/api/v0
 
@@ -180,6 +180,72 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/device'
+    device-specification:
+      type: object
+      properties:
+        name: 
+          type: string
+          example: 'TH-2'
+          readOnly: true
+        description:
+          type: string
+          example: 'Compact Bluetooth module for secure temperature and humidity recording.'
+          readOnly: true
+        type:
+          type: integer 
+          example: 52
+          readOnly: true
+        model: 
+          type: integer
+          example: 203
+          readOnly: true
+        hardware: 
+          type: string 
+          example: '3.1'
+          readOnly: true
+        is_active:
+          type: boolean 
+          example: true
+          readOnly: true 
+        voltage_low: 
+          type: number
+          example: 2600.0
+          description: Lower voltage in [mV]
+          readOnly: true
+        voltage_high: 
+          type: number
+          example: 2900.0
+          description: Higher voltage in [mV]
+          readOnly: true
+        percent_low: 
+          type: number
+          example: 20.0
+          description: Lower value in [%]
+          readOnly: true
+        percent_high:
+          type: number
+          example: 80.0
+          description: Higher value in [%]
+          readOnly: true
+        battery_capacity: 
+          type: number
+          example: 432.0
+          description: Battery capacity in [mAh] 
+          readOnly: true
+        idle_current: 
+          type: number
+          example: 0.007 
+          description: Idle current in [mA] 
+          readOnly: true
+        measurement_charge:
+          type: number
+          example: 0.01
+          description: Electrical charge of one measurement in [mAs] 
+          readOnly: true
+    device-specifications:
+      type: array
+      items:
+        $ref: '#/components/schemas/device-specification'
             
     elog:
       type: object
@@ -812,6 +878,16 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/status' 
+  /discovery/device-specifications/:
+    get:
+      description: Get device specification list. 
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/device-specifications'
   /elog/:
     put:
       description: Put encrypted log
