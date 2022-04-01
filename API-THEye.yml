@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.16.0'
+  version: '0.17.0'
 servers:
   - url: https://backend.theye.ch/api/v0
 
@@ -40,6 +40,35 @@ components:
         configuration:
           type: object
           example: {'custom_property_1': '10', 'custom_property_2':'23'}
+    authority-code:
+      type: object
+      properties:
+        key_id:
+          type: integer
+          example: 314 
+        code: 
+          type: string 
+          format: base16
+          maxLength: 16 
+          minLength: 16 
+          example: 0123456789ABCDEF
+    authority-token:
+      type: object
+      properties:
+        device_id:
+          type: string 
+          format: base16
+          maxLength: 12 
+          minLength: 12 
+          example: 0123456789AB 
+          readOnly: true
+        token: 
+          type: string
+          format: base16
+          maxLength: 48 
+          minLength: 48 
+          example: 00112233445566778899AABBCCDDEEFF0123456789ABCDEF
+          readOnly: true
              
     device:
       type: object
@@ -753,6 +782,221 @@ paths:
                 $ref : '#/components/schemas/status' 
         '404':
           description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+  /devices/{device-id}/compute-access-token:
+    put:
+      description: Compute and get the access token.
+      parameters:
+        - name: device-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: base16
+            maxLength: 12 
+            minLength: 12 
+            example: 0123456789AB 
+      security:
+        - theye_oauth:
+          - write 
+      requestBody:
+        description: Code 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/authority-code' 
+      responses:
+        '200': 
+          description: Ok, access-token delivered.  
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/authority-token' 
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '401':
+          description: Unauthorized. 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '404':
+          description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '500':
+          description: Internal server error. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+  /devices/{device-id}/compute-configuration-token:
+    put:
+      description: Compute and get the configuration token.
+      parameters:
+        - name: device-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: base16
+            maxLength: 12 
+            minLength: 12 
+            example: 0123456789AB 
+      security:
+        - theye_oauth:
+          - write 
+      requestBody:
+        description: Code 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/authority-code' 
+      responses:
+        '200': 
+          description: Ok, configuration-token delivered.  
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/authority-token' 
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '401':
+          description: Unauthorized. 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '404':
+          description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '500':
+          description: Internal server error. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+
+  /devices/{device-id}/compute-factory-access-token:
+    put:
+      description: Compute and get the factory access token.
+      parameters:
+        - name: device-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: base16
+            maxLength: 12 
+            minLength: 12 
+            example: 0123456789AB 
+      requestBody:
+        description: Code 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/authority-code' 
+      responses:
+        '200': 
+          description: Ok, factory-access-token delivered.  
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/authority-token' 
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '404':
+          description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '500':
+          description: Internal server error. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+  /devices/{device-id}/compute-factory-configuration-token:
+    put:
+      description: Compute and get the factory access token.
+      parameters:
+        - name: device-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: base16
+            maxLength: 12 
+            minLength: 12 
+            example: 0123456789AB 
+      requestBody:
+        description: Code 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/authority-code' 
+      responses:
+        '200': 
+          description: Ok, factory-configuration-token delivered.  
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/authority-token' 
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '404':
+          description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '500':
+          description: Internal server error. 
           content:
             application/json:
               schema:
