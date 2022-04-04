@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.17.0'
+  version: '0.18.0'
 servers:
   - url: https://backend.theye.ch/api/v0
 
@@ -69,6 +69,36 @@ components:
           minLength: 48 
           example: 00112233445566778899AABBCCDDEEFF0123456789ABCDEF
           readOnly: true
+    contact:
+      type: object
+      properties:
+        email:
+          type: string
+          format:  email
+          example: alice.wonderland@mail.com
+        subject:
+          type: string
+          maxLength: 255 
+          example: Quote request
+        body:
+          type: string
+          maxLength: 5000
+          example: Lorem ipsum. 
+        first_name:
+          type: string
+          maxLength: 255 
+          example: Alice
+        last_name:
+          type: string
+          maxLength: 255 
+          example: Wonderland
+        company:
+          type: string
+          maxLength: 255 
+          example: Foo Inc. 
+        recaptcha_token: 
+          type: string
+          maxLength: 255
              
     device:
       type: object
@@ -617,6 +647,35 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/api-version'
+  /contact/:
+    post:
+      description: Post a contact formular. 
+      requestBody:
+        description: Contact 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/contact' 
+      responses:
+        '202':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status'
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '500':
+          description: Internal server error. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
   /devices/:
     get:
       description: Get all devices of the user.
