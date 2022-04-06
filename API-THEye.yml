@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.19.0'
+  version: '0.20.0'
 servers:
   - url: https://backend.theye.ch/api/v0
 
@@ -389,6 +389,94 @@ components:
           example: 0.01
           description: Electrical charge of one measurement in [mAs] 
           readOnly: true
+        working_range:
+          readOnly: true
+          type: object
+          properties:
+            humidity:
+              type: object
+              properties:
+                min:
+                  type: number
+                  example: 0 
+                  description: Humidity min in [%RH] 
+                max:
+                  type: number
+                  example: 100 
+                  description: Humidity max in [%Rh] 
+            temperature:
+              type: object
+              properties:
+                min:
+                  type: number
+                  example: -40 
+                  description: Temperature min in [°C] 
+                max:
+                  type: number
+                  example: 100 
+                  description: Temperature min in [°C] 
+        sensor_parameters:
+          readOnly: true
+          type: object
+          properties:
+            humidity_accuracy:
+              type: object
+              properties:
+                maximum:
+                  type: object
+                  properties:
+                    humidity: 
+                      type: array
+                      example: [0, 10, 90, 100]
+                      description: Abscissa (RH) in [%Rh] 
+                    accuracy: 
+                      type: array
+                      example: [7.5, 4.5, 4.5, 7.5]
+                      description: Ordinate (ΔRH) in [%Rh] 
+                typical:
+                  type: object
+                  properties:
+                    humidity: 
+                      type: array
+                      example: [0, 10,  90, 100] 
+                      description: Abscissa (RH) in [%Rh] 
+                    accuracy: 
+                      type: array
+                      example: [4, 2, 2, 4]
+                      description: Ordinate (ΔRH) in [%Rh] 
+            humidity_drift: 
+              type: number
+              example: 0.25
+              description: Long term humidity drift in [%RH/year]
+            temperature_accuracy:
+              type: object
+              properties:
+                maximum:
+                  type: object
+                  properties:
+                    temperature: 
+                      type: array
+                      example: [-40, 0, 65, 125]
+                      description: Abscissa (T) in [°C] 
+                    accuracy: 
+                      type: array
+                      example: [1, 0.4, 0.4, 1]
+                      description: Ordinate (ΔT) in [°C] 
+                typical:
+                  type: object
+                  properties:
+                    temperature: 
+                      type: array
+                      example: [-40, 0, 65, 125]
+                      description: Abscissa (T) in [%Rh] 
+                    accuracy: 
+                      type: array
+                      example: [0.6, 0.2, 0.2, 0.6]
+                      description: Ordinate (ΔT) in [%Rh] 
+            tempertature_drift: 
+              type: number
+              example: 0.03
+              description: Long term temperature drift in [°C/year]
     device-specifications:
       type: array
       items:
