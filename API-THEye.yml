@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.20.0'
+  version: '0.21.0'
 servers:
   - url: https://backend.theye.ch/api/v0
 
@@ -99,7 +99,6 @@ components:
         recaptcha_token: 
           type: string
           maxLength: 255
-             
     device:
       type: object
       properties:
@@ -586,6 +585,28 @@ components:
           format: iso-8601
           example: 2021-01-18T16:32:10.000000Z
           readOnly: true
+    ownership-factory-code:
+      type: object
+      properties:
+        device_id: 
+          type: string 
+          format: base16
+          example: 0123456789AB
+          readOnly: true
+        code: 
+          type: string 
+          format: base16
+          example: CDEF1011 
+          readOnly: true
+        salt_id:
+          type: integer 
+          example: 0
+          readOnly: true
+      description: 
+        'Data are encoded in big endian in QRCode.
+        Example: device_code=0123456789AB and code=CDEF1011 become 
+        AB89674523011110EFCD (AB:89:67:45:23:01 11:10:EF:CD) in QRCode.'
+
     ownership-token:
       type: object
       properties:
@@ -1261,6 +1282,56 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/status' 
+        '401':
+          description: Unauthorized. 
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '404':
+          description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '500':
+          description: Internal server error. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+  /devices/{device-id}/ownership-factory-code/:
+    get:
+      description: Get the ownership factory code of the device
+      security:
+        - theye_oauth:
+          - read 
+      parameters:
+        - name: device-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: base16
+            maxLength: 12 
+            minLength: 12 
+            example: 0123456789AB 
+          
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/ownership-factory-code'
         '401':
           description: Unauthorized. 
         '400':
