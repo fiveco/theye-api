@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.21.0'
+  version: '0.22.0'
 servers:
   - url: https://backend.theye.ch/api/v0
 
@@ -292,6 +292,22 @@ components:
               name:
                 type: string
                 example: Company X 
+    device-public-info:
+      type: object
+      properties:
+        is_free:
+          type: boolean
+          example: True
+        properties:
+        log:
+          type: object
+          properties:
+            start_time_id:
+              type: number 
+              example: 3141592 
+            head_page_time_id:
+              type: number 
+              example: 3200000
     devices-summary:
       type: object
       properties:
@@ -1409,6 +1425,44 @@ paths:
                 $ref : '#/components/schemas/status' 
         '500':
           description: Internal server error. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+  /devices/{device-id}/public-info/:
+     get:
+      description: Get public info about the device.
+      parameters:
+        - name: device-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: base16
+            maxLength: 12 
+            minLength: 12 
+            example: 0123456789AB 
+      responses:
+        '200': 
+          description: Ok. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/device-public-info' 
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '404':
+          description: Not found. 
           content:
             application/json:
               schema:
