@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.22.0'
+  version: '0.23.0'
 servers:
   - url: https://backend.theye.ch/api/v0
 
@@ -14,6 +14,32 @@ components:
           type: string
           format: semantic version number
           example: '1.2.3'
+    signup:
+      type: object
+      properties:
+        signup_token:
+          type: string
+          format: string
+          example: 'fkSF00jawdsf' 
+        first_name:
+          type: string
+          example: Alice
+        last_name:
+          type: string
+          example: Wonderland
+        password:
+          type: string
+          example: SecretPa55word 
+    signup-mail:
+      type: object
+      properties:
+        email:
+          format:  email
+          example: alice.wonderland@mail.com
+        client_id:
+          type: string
+          format: string
+          example: 'fkSF00jawdsf' 
     status:
       type: object
       properties:
@@ -1743,6 +1769,88 @@ paths:
                 $ref : '#/components/schemas/status' 
         '403':
           description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+  /signup/:
+    post:
+      description: Signup  
+      requestBody:
+        description: User informations 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/signup' 
+      responses:
+        '201':
+          description: Created. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '404':
+          description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '500':
+          description: Internal server error. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+  /signup/email/:
+    post:
+      description: Send a verification link to the given email address. 
+      requestBody:
+        description: Email and client id 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/signup-mail' 
+      responses:
+        '202':
+          description: Signup send email accepted. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '404':
+          description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status' 
+        '500':
+          description: Internal server error. 
           content:
             application/json:
               schema:
