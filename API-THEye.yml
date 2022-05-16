@@ -40,7 +40,6 @@ components:
           example: alice.wonderland@mail.com
         client_id:
           type: string
-          format: string
           example: 'fkSF00jawdsf' 
     status:
       type: object
@@ -606,7 +605,7 @@ components:
         max_members:
           type: integer 
         data_history_seconds:
-          type: string 
+          type: integer 
         chart_superposition:
           type: boolean 
         email_new_data:
