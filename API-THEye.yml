@@ -45,20 +45,22 @@ components:
     status:
       type: object
       properties:
+        code:
+          type: string
+          example: 400-000
+        name:
+          type: string
+          format: string
+          example: STATUS_NAME 
+        description:
+          type: string
+          format: string
+          example: Lorem ipsum. 
+    status-response:
+      type: object
+      properties:
         status:
-          type: object
-          properties:
-            code:
-              type: string
-              example: 400-000
-            name:
-              type: string
-              format: string
-              example: STATUS_NAME 
-            description:
-              type: string
-              format: string
-              example: Lorem ipsum. 
+          $ref: '#/components/schemas/status'
     my-client-configuration:
       type: object
       properties:
@@ -916,19 +918,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status'
+                $ref : '#/components/schemas/status-response'
         '400':
           description: Bad request. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '500':
           description: Internal server error. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
   /devices/:
     get:
       description: Get all devices of the user.
@@ -966,7 +968,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
   /devices/summary/:
     get:
       description: Get devices summary.
@@ -1005,7 +1007,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/:
     get:
       description: Get device.
@@ -1036,19 +1038,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '404':
           description: Not found. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
     put:
       description: Put device.
       parameters:
@@ -1085,19 +1087,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '404':
           description: Not found. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/compute-access-token:
     put:
       description: Compute and get the access token.
@@ -1133,7 +1135,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '401':
           description: Unauthorized. 
         '403':
@@ -1141,19 +1143,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '404':
           description: Not found. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '500':
           description: Internal server error. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/compute-configuration-token:
     put:
       description: Compute and get the configuration token.
@@ -1189,7 +1191,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '401':
           description: Unauthorized. 
         '403':
@@ -1197,19 +1199,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '404':
           description: Not found. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '500':
           description: Internal server error. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
 
   /devices/{device-id}/compute-factory-access-token:
     put:
@@ -1243,25 +1245,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '404':
           description: Not found. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '500':
           description: Internal server error. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/compute-factory-configuration-token:
     put:
       description: Compute and get the factory access token.
@@ -1294,25 +1296,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '404':
           description: Not found. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '500':
           description: Internal server error. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
 
   /devices/{device-id}/compute-lock-token:
     put:
@@ -1351,25 +1353,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '404':
           description: Not found. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '500':
           description: Internal server error. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/log/:
     get:
       description: Get log of the device
@@ -1400,25 +1402,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '404':
           description: Not found. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '500':
           description: Internal server error. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/own:
      put:
       description: Own the device.
@@ -1448,13 +1450,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '201': 
           description: Ok, ownership granted and device created. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '401':
           description: Unauthorized. 
         '400':
@@ -1462,25 +1464,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '404':
           description: Not found. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '500':
           description: Internal server error. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/ownership-factory-code/:
     get:
       description: Get the ownership factory code of the device
@@ -1512,25 +1514,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '404':
           description: Not found. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '500':
           description: Internal server error. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/release:
      put:
       description: Release ownership of the device.
@@ -1553,7 +1555,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '401':
           description: Unauthorized. 
         '400':
@@ -1561,25 +1563,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '404':
           description: Not found. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '500':
           description: Internal server error. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/public-info/:
      get:
       description: Get public info about the device.
@@ -1605,19 +1607,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '404':
           description: Not found. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
   /device-info/:
     post:
       description: Post encrypted device info. 
@@ -1634,37 +1636,37 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '400':
           description: Bad request. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '404':
           description: Not found. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '409':
           description: Conflict.
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '500':
           description: Internal server error. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
   /discovery/device-specifications/:
     get:
       description: Get device specification list. 
@@ -1695,19 +1697,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '404':
           description: Not found. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '500':
           description: Internal server error. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
     put: 
       description: Create or update the client configuration of the current user and the current application. 
       security:
@@ -1740,13 +1742,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
 
   /elog/:
     put:
@@ -1764,31 +1766,31 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '400':
           description: Bad request. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '404':
           description: Not found. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '500':
           description: Internal server error. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
   /ownership-code/: 
     post:
       description: Create and get an ownership code. 
@@ -1809,7 +1811,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
   /profile/:
     get:
       description: Get user profile.
@@ -1830,7 +1832,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
     put:
       description: Update the user profile.
       security:
@@ -1857,13 +1859,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
 
   /profile/password/:
     put:
@@ -1884,7 +1886,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '401':
           description: Unauthorized 
         '400':
@@ -1892,13 +1894,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
   /signup/:
     post:
       description: Signup  
@@ -1915,31 +1917,31 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '400':
           description: Bad request. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '404':
           description: Not found. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '500':
           description: Internal server error. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
   /signup/email/:
     post:
       description: Send a verification link to the given email address. 
@@ -1956,31 +1958,31 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '400':
           description: Bad request. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '404':
           description: Not found. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '500':
           description: Internal server error. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
   /subscription/checkout-session/:
     post:
       description: Create a Stripe checkout session 
@@ -2008,19 +2010,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '500':
           description: Internal server error. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
   /subscription/portal-session/:
     post:
       description: Create a Stripe portal session 
@@ -2041,19 +2043,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '500':
           description: Internal server error. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
   /subscription/my-subscription/:
     get:
       description: Get the user current stripe subscription 
@@ -2074,13 +2076,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '500':
           description: Internal server error. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
   /subscription/plans/:
     get:
       description: Get stripe plans (product and prices) 
@@ -2136,28 +2138,28 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '403':
           description: Forbidden. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '404':
           description: Not found. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '409':
           description: Conflict.
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
         '500':
           description: Internal server error. 
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status' 
+                $ref : '#/components/schemas/status-response' 
