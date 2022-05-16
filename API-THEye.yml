@@ -846,6 +846,20 @@ components:
           type: string 
           example: prod_loremipsum 
           readOnly: True
+        cancel_at_period_end:
+          type: boolean 
+          example: False 
+          readOnly: True
+        current_period_start:
+            type: integer
+            description: Time in POSIX 
+            example: 0 
+            readOnly: True
+        current_period_end:
+            type: integer
+            description: Time in POSIX 
+            example: 0 
+            readOnly: True
         price:
           type: object 
           $ref : '#/components/schemas/price'
