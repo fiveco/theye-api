@@ -137,6 +137,7 @@ components:
         quantity:
           type: number 
           example: 10 
+        
     checkout-session-url:
       type: object
       properties:
@@ -808,10 +809,14 @@ components:
           type: integer
           example: 314
           readOnly: True
+        company:
+          type: string
+          example: Inc. 
         email:
           type: string
           format:  email
           example: alice.wonderland@mail.com
+          readOnly: True
         first_name:
           type: string
           example: Alice
@@ -823,6 +828,10 @@ components:
           format: unicode locale identifier
           description: https://unicode.org/reports/tr35/
           example: 'en-US'
+        currency:
+          type: string
+          example: chf 
+          readOnly: True
 
     synchronization-nonce:
       type: object
