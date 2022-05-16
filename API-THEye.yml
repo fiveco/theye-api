@@ -19,10 +19,6 @@ components:
     signup:
       type: object
       properties:
-        signup_token:
-          type: string
-          format: string
-          example: 'fkSF00jawdsf' 
         first_name:
           type: string
           example: Alice
@@ -32,6 +28,42 @@ components:
         password:
           type: string
           example: SecretPa55word 
+        company:
+          type: string
+          example: Inc. 
+        signup_token:
+          type: string
+          format: string
+          example: 'fkSF00jawdsf' 
+        checkout:
+          type: object
+          $ref: '#/components/schemas/signup-checkout-session'
+    signup-checkout-session:
+      type: object
+      properties:
+        price_id:
+          type: string
+          example: price_fkdalj2o3ijsf
+        quantity:
+          type: number 
+          example: 10 
+        client_id:
+          type: string 
+          example: fdkslafjlak 
+        redirect_uri_success:
+          type: string
+          example: http://localhost/checkout/success 
+        redirect_uri_cancel:
+          type: string
+          example: http://localhost/checkout/cancel 
+    signup-checkout-url:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/status'
+        checkout_url:
+          type: string
+          example: https://example.com 
     signup-mail:
       type: object
       properties:
@@ -41,6 +73,12 @@ components:
         client_id:
           type: string
           example: 'fkSF00jawdsf' 
+        recaptcha_token:
+          type: string
+          example: 'feskaflelgj' 
+        redirect_uri:
+          type: string
+          example: http://localhost/signup/mail-verified 
     status:
       type: object
       properties:
@@ -1937,7 +1975,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status-response' 
+                type: object
+                $ref : '#/components/schemas/signup-checkout-url' 
         '400':
           description: Bad request. 
           content:
