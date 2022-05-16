@@ -137,6 +137,12 @@ components:
         quantity:
           type: number 
           example: 10 
+        redirect_uri_success:
+          type: string
+          example: http://localhost/checkout/success 
+        redirect_uri_cancel:
+          type: string
+          example: http://localhost/checkout/cancel 
         
     checkout-session-url:
       type: object
@@ -741,6 +747,12 @@ components:
           items:
             type: object 
             $ref : '#/components/schemas/price'
+    portal-session:
+      type: object
+      properties:
+        redirect_uri:
+          type: string
+          example: https://example.com 
     portal-session-url:
       type: object
       properties:
@@ -2037,6 +2049,13 @@ paths:
       security:
         - theye_oauth:
           - write 
+      requestBody:
+        description:  Redirection uri 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/portal-session' 
       responses:
         '201':
           description: Created. 
