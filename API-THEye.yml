@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.25.0'
+  version: '0.26.0'
 servers:
   - url: https://backend.theye.ch/api/v0
   - url: https://staging.backend.theye.ch/api/v0
@@ -670,33 +670,121 @@ components:
           type: string
           format: hex48 
           example: 0123456789AB 
-        time:
+        time_interval:
+          type: integer
+          description: Interval between successive points in seconds.
+        start_time_id:
+          type: number 
+          example: 314 
+        name:
+          type: string
+          example: 'Packet A delivery.' 
+        start_date:
+          type: integer
+          format: Time in POSIX 
+        end_date:
+          type: integer
+          format: Time in POSIX 
+    log_data:
+      type: object
+      properties:
+        device_id:
+          type: string
+          format: hex48 
+          example: 0123456789AB 
+        start_time_id:
+          type: integer
+          example: 314 
+        period:
+          type: string
+          example: minute 
+        temperature_mean:
+          type: number 
+          description: "The window (start_date, end_date) mean temperature."
+          example: 25
+        temperature_max:
+          type: number 
+          description: "The window (start_date, end_date) max temperature."
+          example: 25.1 
+        temperature_min:
+          type: number 
+          description: "The window (start_date, end_date) min temperature."
+          example: 24.9 
+        humidity_mean:
+          type: number 
+          description: "The window (start_date, end_date) mean humidity."
+          example: 50 
+        humidity_max:
+          type: number 
+          description: "The window (start_date, end_date) max humidity."
+          example: 50.1 
+        humidity_min:
+          type: number 
+          description: "The window (start_date, end_date) min humidity."
+          example: 49.9 
+        times:
           type: array
           items: 
             type: integer
             description: Time in POSIX 
           example:
             - 10
-            - 20 
-            - 30 
-        temperature:
+            - 70 
+            - 130 
+        temperatures:
           type: array
           items: 
-            type: integer
-            description: Temperature of the point (in 0.01 [°C]) 
+            type: number 
+            description: Temperature of the point (in [°C]) 
           example:
-            - 2500 
-            - 2510 
-            - 2490 
-        humidity:
+            - 25.00 
+            - 25.10 
+            - 24.90 
+        temperatures_max:
           type: array
           items: 
-            type: integer
-            description: Humidity of the point (in 0.01 [%]) 
+            type: number 
+            description: Temperature of the point (in [°C]) 
           example:
-            - 5000 
-            - 5010 
-            - 4990 
+            - 25.00 
+            - 25.10 
+            - 24.90 
+        temperatures_min:
+          type: array
+          items: 
+            type: number 
+            description: Temperature of the point (in [°C]) 
+          example:
+            - 25.00 
+            - 25.10 
+            - 24.90 
+        humidities:
+          type: array
+          items: 
+            type: number 
+            description: Humidity of the point (in [%]) 
+          example:
+            - 50.00 
+            - 50.10 
+            - 49.90 
+        humidities_max:
+          type: array
+          items: 
+            type: number 
+            description: Humidity of the point (in [%]) 
+          example:
+            - 50.00 
+            - 50.10 
+            - 49.90 
+        humidities_min:
+          type: array
+          items: 
+            type: number 
+            description: Humidity of the point (in [%]) 
+          example:
+            - 50.00 
+            - 50.10 
+            - 49.90 
     ownership-code:
       type: object
       properties:
@@ -1444,9 +1532,9 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/status-response' 
-  /devices/{device-id}/log/:
+  /devices/{device-id}/logs/:
     get:
-      description: Get log of the device
+      description: Get the list of logs of the device
       security:
         - theye_oauth:
           - read 
@@ -1466,7 +1554,102 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/log'
+                type: array
+                items:
+                  $ref : '#/components/schemas/log'
+        '401':
+          description: Unauthorized. 
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '404':
+          description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '500':
+          description: Internal server error. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+  /devices/{device-id}/logs/{start-time-id}/:
+    get:
+      description: 
+        Get the log data. If needed, the server will automtically adjust the 
+        aggregation period to build a response containing less than the server
+        max point setting. (1000 points)
+      security:
+        - theye_oauth:
+          - read 
+      parameters:
+        - name: device-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: base16
+            maxLength: 12 
+            minLength: 12 
+            example: 0123456789AB 
+        - name: start-tim-id 
+          in: path
+          required: true
+          schema:
+            type: integer 
+            example: 314
+        - name: period
+          in: query 
+          description: 
+            Set the aggregation period [second, minute, hour, day, month, year]
+          schema:
+            type: string 
+            example: second 
+            default: second 
+        - name: start_date
+          in: query 
+          description: 
+            Restrict data to values after the start_date (inclusive). 
+            If no value is provided, the start_date of the log is used.
+          schema:
+            type: int 
+            format: Time in POSIX 
+        - name: end_date
+          in: query 
+          description: 
+            Restrict data to values before the end_date (inclusive). 
+            If no value is provided, the end_date of the log is used.
+          schema:
+            type: int 
+            format: Time in POSIX 
+        - name: quantity 
+          in: query 
+          description: 
+            Restrict point quantity to less than the quantity parameter. 
+            If no value is provided, the max default value is used (3600).
+          schema:
+            type: int 
+            format: Time in POSIX 
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref : '#/components/schemas/log_data'
         '401':
           description: Unauthorized. 
         '400':
