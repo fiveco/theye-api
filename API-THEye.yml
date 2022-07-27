@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.27.0'
+  version: '0.27.1'
 servers:
   - url: https://backend.theye.ch/api/v0
   - url: https://staging.backend.theye.ch/api/v0
@@ -53,9 +53,11 @@ components:
         redirect_uri_success:
           type: string
           example: http://localhost/checkout/success 
+          description: It must be registered as non_sensitive_redirect_uris.
         redirect_uri_cancel:
           type: string
           example: http://localhost/checkout/cancel 
+          description: It must be registered as non_sensitive_redirect_uri.
     signup-checkout-url:
       type: object
       properties:
@@ -79,6 +81,8 @@ components:
         redirect_uri:
           type: string
           example: http://localhost/signup/mail-verified 
+          description: It must be registered as sensitive_redirect_uri.
+
     status:
       type: object
       properties:
@@ -178,9 +182,11 @@ components:
         redirect_uri_success:
           type: string
           example: http://localhost/checkout/success 
+          description: It must be registered as non_sensitive_redirect_uri.
         redirect_uri_cancel:
           type: string
           example: http://localhost/checkout/cancel 
+          description: It must be registered as non_sensitive_redirect_uri.
         
     checkout-session-url:
       type: object
@@ -879,6 +885,7 @@ components:
         redirect_uri:
           type: string
           example: https://example.com 
+          description: It must be registered as non_sensitive_redirect_uris
     portal-session-url:
       type: object
       properties:
