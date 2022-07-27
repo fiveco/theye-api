@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.28.0'
+  version: '0.29.0'
 servers:
   - url: https://backend.theye.ch/api/v0
   - url: https://staging.backend.theye.ch/api/v0
@@ -82,7 +82,6 @@ components:
           type: string
           example: http://localhost/signup/mail-verified 
           description: It must be registered as sensitive_redirect_uri.
-
     status:
       type: object
       properties:
@@ -870,6 +869,32 @@ components:
         new_password:
           type: string
           example: NewSecretPa55word 
+    password-reset:
+      type: object
+      properties:
+        new_password:
+          type: string
+          example: NewSecretPa55word 
+        password_token:
+          type: string
+          format: string
+          example: 'fkSF00jawdsf' 
+    password-reset-mail:
+      type: object
+      properties:
+        email:
+          format:  email
+          example: alice.wonderland@mail.com
+        client_id:
+          type: string
+          example: 'fkSF00jawdsf' 
+        recaptcha_token:
+          type: string
+          example: 'feskaflelgj' 
+        redirect_uri:
+          type: string
+          example: http://localhost/signup/mail-verified 
+          description: It must be registered as sensitive_redirect_uri.
     plan:
       type: object
       properties:
@@ -2085,6 +2110,88 @@ paths:
           description: Unauthorized.
         '403':
           description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+  /password-reset:
+    put:
+      description: Password reset.  
+      requestBody:
+        description: Password reset parameters. 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/password-reset' 
+      responses:
+        '200':
+          description: Password updated. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '404':
+          description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '500':
+          description: Internal server error. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+  /password-reset/email/:
+    post:
+      description: Create a password reset action and send a password reset link to the given email address. 
+      requestBody:
+        description: Password reset parameters 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/password-reset-mail' 
+      responses:
+        '202':
+          description: Password reset send email accepted. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '404':
+          description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '500':
+          description: Internal server error. 
           content:
             application/json:
               schema:
