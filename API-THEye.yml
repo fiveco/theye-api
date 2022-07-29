@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.29.0'
+  version: '0.30.0'
 servers:
   - url: https://backend.theye.ch/api/v0
   - url: https://staging.backend.theye.ch/api/v0
@@ -16,6 +16,8 @@ components:
           type: string
           format: semantic version number
           example: '1.2.3'
+        status:
+          $ref: '#/components/schemas/status'
     signup:
       type: object
       properties:
@@ -84,6 +86,7 @@ components:
           description: It must be registered as sensitive_redirect_uri.
     status:
       type: object
+      readOnly: True
       properties:
         code:
           type: string
@@ -110,6 +113,8 @@ components:
         configuration:
           type: object
           example: {'custom_property_1': '10', 'custom_property_2':'23'}
+        status:
+          $ref: '#/components/schemas/status'
     authority-code:
       type: object
       properties:
@@ -139,6 +144,8 @@ components:
           minLength: 48 
           example: 00112233445566778899AABBCCDDEEFF0123456789ABCDEF
           readOnly: true
+        status:
+          $ref: '#/components/schemas/status'
     contact:
       type: object
       properties:
@@ -193,6 +200,8 @@ components:
         checkout_url:
           type: string
           example: https://example.com 
+        status:
+          $ref: '#/components/schemas/status'
     device:
       type: object
       properties:
@@ -338,6 +347,8 @@ components:
                           type: boolean
                         tested:
                           type: boolean
+        status:
+          $ref: '#/components/schemas/status'
     devices:
       type: array
       items:
@@ -401,6 +412,8 @@ components:
             head_page_time_id:
               type: number 
               example: 3200000
+        status:
+          $ref: '#/components/schemas/status'
     devices-summary:
       type: object
       properties:
@@ -435,6 +448,8 @@ components:
               total :
                 type: integer
                 example : 40 
+        status:
+          $ref: '#/components/schemas/status'
     device-specification:
       type: object
       properties:
@@ -805,6 +820,8 @@ components:
             - 50.00 
             - 50.10 
             - 49.90 
+        status:
+          $ref: '#/components/schemas/status'
     ownership-code:
       type: object
       properties:
@@ -819,6 +836,8 @@ components:
           type: string
           format: iso-8601
           example: 2021-01-18T16:32:10.000000Z
+        status:
+          $ref: '#/components/schemas/status'
           readOnly: true
     ownership-factory-code:
       type: object
@@ -837,6 +856,8 @@ components:
           type: integer 
           example: 0
           readOnly: true
+        status:
+          $ref: '#/components/schemas/status'
       description: 
         'Data are encoded in big endian in QRCode.
         Example: device_code=0123456789AB and code=CDEF1011 become 
@@ -932,6 +953,8 @@ components:
         portal_url:
           type: string
           example: https://example.com 
+        status:
+          $ref: '#/components/schemas/status'
     price:
       type: object
       properties:
@@ -1001,6 +1024,8 @@ components:
         product:
           type: object 
           $ref : '#/components/schemas/product'
+        status:
+          $ref: '#/components/schemas/status'
     profile:
       type: object
       properties:
@@ -1031,6 +1056,8 @@ components:
           type: string
           example: chf 
           readOnly: True
+        status:
+          $ref: '#/components/schemas/status'
 
     synchronization-nonce:
       type: object
@@ -1047,6 +1074,8 @@ components:
           format: iso-8601
           example: 2021-01-18T16:32:10.000000Z
           readOnly: true
+        status:
+          $ref: '#/components/schemas/status'
     synchronization-code:
       type: object
       properties:
@@ -1065,6 +1094,8 @@ components:
           maxLength: 32 
           minLength: 32 
           example: 00112233445566778899AABBCCDDEEFF
+        status:
+          $ref: '#/components/schemas/status'
     synchronization-token:
       type: object
       properties:
@@ -1082,6 +1113,8 @@ components:
           minLength: 48 
           example: 00112233445566778899AABBCCDDEEFF0123456789ABCDEF
           readOnly: true
+        status:
+          $ref: '#/components/schemas/status'
 
   securitySchemes:
     theye_oauth:
@@ -1694,9 +1727,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref : '#/components/schemas/log_data'
+                $ref : '#/components/schemas/log_data'
         '401':
           description: Unauthorized. 
         '400':
