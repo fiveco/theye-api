@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.31.0'
+  version: '0.32.0'
 servers:
   - url: https://backend.theye.ch/api/v0
   - url: https://staging.backend.theye.ch/api/v0
@@ -365,9 +365,18 @@ components:
             type: string
             example: Device A
           owner:
-            type: integer 
-            example: 1 
-            readOnly: true
+            type: object
+            properties:
+              id:
+                type: integer 
+                example: 1 
+                readOnly: true
+              first_name:
+                type: string
+                example: Alice
+              last_name:
+                type: string
+                example: Wonderland
           type:
             type: integer
             example: 10
@@ -419,13 +428,16 @@ components:
       properties:
         total:
           type: integer
-          example: 52
-        total_owners:
+          example: 62
+        total_owner:
           type: integer
           example: 12 
-        total_organizations:
+        total_organization:
           type: integer
           example: 40 
+        total_free:
+          type: integer
+          example: 10 
         owners:
           type: array
           items:
@@ -1201,6 +1213,12 @@ paths:
             items:
               type: integer
               example: 314
+        - name: free 
+          in : query
+          description: Filter by free device.
+          schema:
+            type: string 
+            example: true 
       security:
         - theye_oauth:
           - read 
@@ -1239,6 +1257,12 @@ paths:
             items:
               type: integer
               example: 314
+        - name: free 
+          in : query
+          description: Filter by free device.
+          schema:
+            type: string 
+            example: true 
       security:
         - theye_oauth:
           - read 
