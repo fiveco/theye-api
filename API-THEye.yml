@@ -1064,6 +1064,12 @@ components:
           format: unicode locale identifier
           description: https://unicode.org/reports/tr35/
           example: 'en-US'
+        unit_system:
+          type: string
+          description: 
+            "Could be ether SI, IMPERIAL or USCS (Internaltional system of units,
+            Imperial system of units or US Customary measurement system)."
+          example: 'SI'
         currency:
           type: string
           example: chf 
