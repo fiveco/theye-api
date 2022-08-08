@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.32.0'
+  version: '0.33.0'
 servers:
   - url: https://backend.theye.ch/api/v0
   - url: https://staging.backend.theye.ch/api/v0
@@ -1064,6 +1064,12 @@ components:
           format: unicode locale identifier
           description: https://unicode.org/reports/tr35/
           example: 'en-US'
+        unit_system:
+          type: string
+          description: 
+            "Could be ether SI, IMPERIAL or USCS (Internaltional system of units,
+            Imperial system of units or US Customary measurement system)."
+          example: 'SI'
         currency:
           type: string
           example: chf 
@@ -2044,6 +2050,18 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/device-specifications'
+  /discovery/status/:
+    get:
+      description: Get status list. 
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref : '#/components/schemas/status'
   /my-client-configuration/:
     get: 
       description: Get the client configuration of the current user and the current application. 
