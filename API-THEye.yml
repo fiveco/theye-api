@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.34.0'
+  version: '0.35.0'
 servers:
   - url: https://backend.theye.ch/api/v0
   - url: https://staging.backend.theye.ch/api/v0
@@ -144,6 +144,134 @@ components:
           minLength: 48 
           example: 00112233445566778899AABBCCDDEEFF0123456789ABCDEF
           readOnly: true
+        status:
+          $ref: '#/components/schemas/status'
+    batch-item:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 314 
+        name:
+          type: string
+          example: Foo 
+        description:
+          type: string
+          example: Bar. 
+        note:
+          type: string
+          example: Lorem ipsum. 
+        manufaturer:
+          type: string
+          example: The Manufacturer 
+        manufacture_date:
+          type: string
+          format: yyyy-mm-dd
+          example: "2021-01-18"
+        creation_date:
+          type: string
+          format: iso-8601
+          example: 2021-01-18T16:32:10.000000Z
+        assemblers:
+          type: array
+          items: 
+            type: integer
+          example: [1,3]
+        ofc_salt_id:
+          type: integer
+          example: 314 
+        size:
+          type: integer
+          example: 1000 
+        configuration:
+          type: string
+          format: json
+          example: {"foo":"bar"}
+        is_active:
+          type: boolean
+          example: true 
+    batch:
+      $ref: '#/components/schemas/batch-item'
+      properties:
+        status:
+          $ref: '#/components/schemas/status'
+        
+    batches:
+      type: object
+      properties:
+        batches:
+          type: array
+          items:
+            $ref: '#/components/schemas/batch-item'
+        status:
+          $ref: '#/components/schemas/status'
+
+    batch-configuration:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 314 
+        name:
+          type: string
+          example: Foo 
+        ofc_salt_id:
+          type: integer
+          example: 314 
+        configuration:
+          type: string
+          format: json
+          example: "{'foo':'bar'}"
+        size:
+          type: integer
+          example: 1000 
+        recorded_devices:
+          type: array
+          items:
+            type: string 
+            format: base16
+            maxLength: 12 
+            minLength: 12 
+          example: ["0123456789AB", "001122334455"]
+        status:
+          $ref: '#/components/schemas/status'
+    record:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 314 
+          readOnly: true
+        creation_date:
+          type: string
+          format: iso-8601
+          example: 2021-01-18T16:32:10.000000Z
+          readOnly: true
+        record:
+          type: string
+          format: json
+          example: {"foo":"bar"}
+        device_id:
+          type: string 
+          format: base16
+          maxLength: 12 
+          minLength: 12 
+          example: "0123456789AB"
+        batch_id:
+          type: integer
+          example: 314
+        creator_email:
+          type: string
+          format: email
+          example: alice.wonderland@mail.com
+          readOnly: true
+    records:
+      type: object
+      properties:
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/record'
         status:
           $ref: '#/components/schemas/status'
     contact:
@@ -1767,7 +1895,7 @@ paths:
             Restrict data to values after the start_date (inclusive). 
             If no value is provided, the start_date of the log is used.
           schema:
-            type: int 
+            type: integer 
             format: Time in POSIX 
         - name: end_date
           in: query 
@@ -1775,7 +1903,7 @@ paths:
             Restrict data to values before the end_date (inclusive). 
             If no value is provided, the end_date of the log is used.
           schema:
-            type: int 
+            type: integer 
             format: Time in POSIX 
         - name: quantity 
           in: query 
@@ -1783,7 +1911,7 @@ paths:
             Restrict point quantity to less than the quantity parameter. 
             If no value is provided, the max default value is used (3600).
           schema:
-            type: int 
+            type: integer 
             format: Time in POSIX 
 
       responses:
@@ -2294,6 +2422,156 @@ paths:
                 $ref : '#/components/schemas/status-response' 
         '404':
           description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '500':
+          description: Internal server error. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+  /production/batches/:
+    get:
+      description: Get production batches.
+      security:
+        - theye_oauth:
+          - read 
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/batches' 
+        '401':
+          description: Unauthorized 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+  /production/batches/{batch_id}/:
+    get:
+      description: Get production batch.
+      security:
+        - theye_oauth:
+          - read 
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/batch' 
+        '401':
+          description: Unauthorized 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '404':
+          description: Not Found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+  /production/batches/{batch_id}/configuration/:
+    get:
+      description: Get production batch configuration.
+      security:
+        - theye_oauth:
+          - read 
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/batch-configuration' 
+        '401':
+          description: Unauthorized 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '404':
+          description: Not Found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+  /production/records/:
+    get:
+      description: Get production records.
+      security:
+        - theye_oauth:
+          - read 
+      parameters:
+        - name: batch 
+          in : query
+          description: Filter by batch id.
+          schema:
+            type: array
+            items:
+              type: integer
+              example: 314
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/records' 
+        '401':
+          description: Unauthorized 
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+    post:
+      description: Create a production record. 
+      security:
+        - theye_oauth:
+          - write
+      requestBody:
+        description: Record 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/record' 
+      responses:
+        '201':
+          description: Created 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '401':
+          description: Unauthorized 
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '403':
+          description: Forbidden. 
           content:
             application/json:
               schema:
