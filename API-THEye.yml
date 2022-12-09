@@ -728,7 +728,7 @@ components:
           items: 
             $ref: '#/components/schemas/log'
         status:
-          $ref: '#/components/schemas/status'
+          $ref: '#/components/schemas/status'    
     log:
       type: object
       properties:
@@ -748,9 +748,31 @@ components:
         start_date:
           type: integer
           format: Time in POSIX 
+          deprecated: true
         end_date:
           type: integer
           format: Time in POSIX 
+          deprecated: true
+        time_corrections:
+          type: array
+          items: 
+            $ref: '#/components/schemas/log_time_correction'
+    log_time_correction:
+      type: object
+      properties:
+        type:
+          type: string
+          example: "none"
+          enum:
+            - none
+            - step
+            - linear
+        start_date:
+          type: integer
+          format: Time in POSIX 
+        end_date:
+          type: integer
+          format: Time in POSIX     
     log_data:
       type: object
       properties:
@@ -764,6 +786,14 @@ components:
         period:
           type: string
           example: minute 
+        time_correction:
+          type: string
+          description: The time correction type used on the transmitted data.
+          enum:
+            - none
+            - step
+            - linear
+          example: none
         temperature_mean:
           type: number 
           description: "The window (start_date, end_date) mean temperature."
@@ -1767,7 +1797,7 @@ paths:
             Restrict data to values after the start_date (inclusive). 
             If no value is provided, the start_date of the log is used.
           schema:
-            type: int 
+            type: integer 
             format: Time in POSIX 
         - name: end_date
           in: query 
@@ -1775,7 +1805,7 @@ paths:
             Restrict data to values before the end_date (inclusive). 
             If no value is provided, the end_date of the log is used.
           schema:
-            type: int 
+            type: integer 
             format: Time in POSIX 
         - name: quantity 
           in: query 
@@ -1783,8 +1813,21 @@ paths:
             Restrict point quantity to less than the quantity parameter. 
             If no value is provided, the max default value is used (3600).
           schema:
-            type: int 
+            type: integer 
             format: Time in POSIX 
+        - name: time_correction
+          in: query
+          description: 
+            Choose the type of time correction wanted on log data points
+            time axis. Must be based on start and end dates of log data.
+          schema:
+            type: string
+            example: none
+            enum:
+              - none
+              - step
+              - linear
+            default: none
 
       responses:
         '200':
