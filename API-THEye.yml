@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.35.0'
+  version: '0.36.0'
 servers:
   - url: https://backend.theye.ch/api/v0
   - url: https://staging.backend.theye.ch/api/v0
@@ -876,6 +876,28 @@ components:
         start_date:
           type: integer
           format: Time in POSIX 
+          deprecated: true
+        end_date:
+          type: integer
+          format: Time in POSIX 
+          deprecated: true
+        time_corrections:
+          type: array
+          items: 
+            $ref: '#/components/schemas/log_time_correction'
+    log_time_correction:
+      type: object
+      properties:
+        type:
+          type: string
+          example: "none"
+          enum:
+            - none
+            - step
+            - linear
+        start_date:
+          type: integer
+          format: Time in POSIX 
         end_date:
           type: integer
           format: Time in POSIX 
@@ -892,6 +914,14 @@ components:
         period:
           type: string
           example: minute 
+        time_correction:
+          type: string
+          description: The time correction type used on the transmitted data.
+          enum:
+            - none
+            - step
+            - linear
+          example: none
         temperature_mean:
           type: number 
           description: "The window (start_date, end_date) mean temperature."
@@ -1913,6 +1943,19 @@ paths:
           schema:
             type: integer 
             format: Time in POSIX 
+        - name: time_correction
+          in: query
+          description: 
+            Choose the type of time correction wanted on log data points
+            time axis. Must be based on start and end dates of log data.
+          schema:
+            type: string
+            example: none
+            enum:
+              - none
+              - step
+              - linear
+            default: none
 
       responses:
         '200':
