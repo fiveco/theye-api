@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.36.0'
+  version: '0.37.0'
 servers:
   - url: https://backend.theye.ch/api/v0
   - url: https://staging.backend.theye.ch/api/v0
@@ -330,6 +330,12 @@ components:
           example: https://example.com 
         status:
           $ref: '#/components/schemas/status'
+    check-synchronization:
+      type: object
+      properties:
+        time_id:
+          type: integer 
+          example: 314 
     device:
       type: object
       properties:
@@ -1328,6 +1334,18 @@ components:
           readOnly: true
         status:
           $ref: '#/components/schemas/status'
+    synchronization-status:
+      type: object
+      properties:
+        synchronized:
+          type: boolean
+          example: true 
+          readOnly: true
+        delta:
+          type: integer
+          example: 314
+        status:
+          $ref: '#/components/schemas/status'
 
   securitySchemes:
     theye_oauth:
@@ -1561,6 +1579,51 @@ paths:
                 $ref : '#/components/schemas/status-response' 
         '404':
           description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+  /devices/{device-id}/check-synchronization:
+    put:
+      description: Check wheter the device is synchronized with the server or not.
+      parameters:
+        - name: device-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: base16
+            maxLength: 12 
+            minLength: 12 
+            example: 0123456789AB 
+      requestBody:
+        description: Current time id 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/check-synchronization' 
+      responses:
+        '200': 
+          description: Ok, access-token delivered.  
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/synchronization-status' 
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '404':
+          description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '500':
+          description: Internal server error. 
           content:
             application/json:
               schema:
