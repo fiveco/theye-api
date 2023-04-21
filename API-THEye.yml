@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.37.0'
+  version: '0.38.0'
 servers:
   - url: https://backend.theye.ch/api/v0
   - url: https://staging.backend.theye.ch/api/v0
@@ -560,6 +560,9 @@ components:
             head_page_time_id:
               type: number 
               example: 3200000
+            need_synchronization:
+              type: boolean
+              example: true
         status:
           $ref: '#/components/schemas/status'
     devices-summary:
