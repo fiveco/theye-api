@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.38.0'
+  version: '0.39.0'
 servers:
   - url: https://backend.theye.ch/api/v0
   - url: https://staging.backend.theye.ch/api/v0
@@ -12,6 +12,10 @@ components:
     api-version:
       type: object
       properties:
+        server_version:
+          type: string
+          format: semantic version number
+          example: '1.2.3'
         api_version:
           type: string
           format: semantic version number
@@ -1368,7 +1372,7 @@ components:
 paths:
   /:
     get:
-      description: Get THEye API version. 
+      description: Get THEye Server and API versions. 
       responses:
         '200':
           description: OK
