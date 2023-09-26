@@ -1,11 +1,35 @@
 openapi: '3.0.2'
 info:
   title: API THEye
-  version: '0.39.0'
+  description: "THEye backend server API description."
+  termsOfService: https://theye.ch/en/terms
+  version: '0.40.0'
+  contact: 
+    name: FiveCo Innovative Engineering
+    url: https://www.fiveco.ch
+    email: info@fiveco.ch
 servers:
   - url: https://backend.theye.ch/api/v0
+    description: Official production server
+    variables:
+      port:
+        default: "443"
+      basePath:
+        default: v0
   - url: https://staging.backend.theye.ch/api/v0
+    description: Official staging server
+    variables:
+      port:
+        default: "443"
+      basePath:
+        default: v0
   - url: http://localhost:8000/api/v0
+    description: Local development server
+    variables:
+      port:
+        default: "8000"
+      basePath:
+        default: v0
 
 components:
   schemas:
@@ -606,6 +630,45 @@ components:
               total :
                 type: integer
                 example : 40 
+        status:
+          $ref: '#/components/schemas/status'
+    task-status:
+      type: object
+      properties:
+        nonce:
+          type: string 
+          format: base16
+          maxLength: 24 
+          minLength: 24 
+          example: 00112233445566778899AABB
+          readOnly: true
+        expires:
+          type: string
+          format: iso-8601
+          example: 2021-01-18T16:32:10.000000Z
+          readOnly: true
+        progress:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+        finished:
+          type: boolean
+          default: false
+        error:
+          type: boolean
+          default: false
+        message:
+          type: string
+          description: Error reason
+          example: Lorem ipsum
+        status:
+          $ref: '#/components/schemas/status'
+    devices-concatenation-file:
+      type: object
+      properties:
+        file:
+          type: object
+          description: "File required"
         status:
           $ref: '#/components/schemas/status'
     device-specification:
@@ -1498,6 +1561,156 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/status-response' 
+  /devices/concatenation/:
+    get:
+      description: Retrieve data from multiples devices between time boundaries and concatenate them in a file (async process)
+      parameters:
+        - name: devices 
+          in : query
+          description: Filter by device-id array.
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+              format: "001122334455"
+              example: [0123456789AB] 
+        - name: start_date
+          in: query 
+          description: 
+            Restrict data to values after the start_date (inclusive). 
+            If no value is provided, the start_date of the log is used.
+          required: true
+          schema:
+            type: integer 
+            format: Time in POSIX 
+            example: 12345678
+        - name: end_date
+          in: query 
+          description: 
+            Restrict data to values before the end_date (inclusive). 
+            If no value is provided, the end_date of the log is used.
+          required: true
+          schema:
+            type: integer 
+            format: Time in POSIX 
+            example: 12345699
+        - name: include
+          in: query
+          description: Data to add to file (array with temperature and/or humidity)
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - temperature
+                - humidity
+              default: 
+                enum:
+                  - temperature
+                  - humidity
+        - name: file_type
+          in: query
+          description: File type to retrieve
+          schema:
+            type: string
+            enum:
+              - csv
+            default: csv
+        - name: time_correction
+          in: query
+          description: 
+            Choose the type of time correction wanted on log data points
+            time axis. Must be based on start and end dates of log data.
+          schema:
+            type: string
+            example: none
+            enum:
+              - none
+              - step
+              - linear
+            default: none
+      security:
+        - theye_oauth:
+          - read 
+      responses:
+        '200': 
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/task-status'                   
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+  /devices/concatenation/{nonce-id}/:
+    get:
+      description: Retrieve concatenation file creation task state
+      parameters:
+        - name: nonce-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: base16
+            maxLength: 24 
+            minLength: 24 
+            example: 00112233445566778899AABB
+            readOnly: true
+      security:
+        - theye_oauth:
+          - read 
+      responses:
+        '200': 
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/task-status'                   
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+  /devices/concatenation/{nonce-id}/file/:
+    get:
+      description: Retrieve concatenation file (status must be finished=true)
+      parameters:
+        - name: nonce-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: base16
+            maxLength: 24 
+            minLength: 24 
+            example: 00112233445566778899AABB
+            readOnly: true
+      security:
+        - theye_oauth:
+          - read 
+      responses:
+        '200': 
+          description: OK
+          content: 
+            text/csv:
+              schema:
+                format: file                
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden. 
+        '404':
+          description: Not found (may be a bad nonce id)
   /devices/{device-id}/:
     get:
       description: Get device.
