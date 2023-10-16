@@ -3,7 +3,7 @@ info:
   title: API THEye
   description: "THEye backend server API description."
   termsOfService: https://theye.ch/en/terms
-  version: '0.40.0'
+  version: '0.41.0'
   contact: 
     name: FiveCo Innovative Engineering
     url: https://www.fiveco.ch
@@ -663,6 +663,56 @@ components:
           example: Lorem ipsum
         status:
           $ref: '#/components/schemas/status'
+    devices-concatenation:
+      type: object
+      properties:
+        devices:
+          description: Filter by device-id array.
+          type: array
+          items:
+            type: string
+            format: "001122334455"
+            example: [0123456789AB] 
+        start_date:
+          description: 
+            Restrict data to values after the start_date (inclusive). 
+            If no value is provided, the start_date of the log is used.
+          type: integer 
+          format: Time in POSIX 
+          example: 12345678
+        end_date:
+          description: 
+            Restrict data to values before the end_date (inclusive). 
+            If no value is provided, the end_date of the log is used.
+          type: integer 
+          format: Time in POSIX 
+          example: 12345699
+        include:
+          description: Data to add to file (array with temperature and/or humidity)
+          type: array
+          items:
+            type: string
+            enum:
+              - temperature
+              - humidity
+          default: ['temperature','humidity']
+        file_type:
+          description: File type to retrieve
+          type: string
+          enum:
+            - csv
+          default: csv
+        time_correction:
+          description: 
+            Choose the type of time correction wanted on log data points
+            time axis. Must be based on start and end dates of log data.
+          type: string
+          example: none
+          enum:
+            - none
+            - step
+            - linear
+          default: none
     devices-concatenation-file:
       type: object
       properties:
@@ -1562,78 +1612,15 @@ paths:
               schema:
                 $ref : '#/components/schemas/status-response' 
   /devices/concatenation/:
-    get:
-      description: Retrieve data from multiples devices between time boundaries and concatenate them in a file (async process)
-      parameters:
-        - name: devices 
-          in : query
-          description: Filter by device-id array.
-          required: true
-          schema:
-            type: array
-            items:
-              type: string
-              format: "001122334455"
-              example: [0123456789AB] 
-        - name: start_date
-          in: query 
-          description: 
-            Restrict data to values after the start_date (inclusive). 
-            If no value is provided, the start_date of the log is used.
-          required: true
-          schema:
-            type: integer 
-            format: Time in POSIX 
-            example: 12345678
-        - name: end_date
-          in: query 
-          description: 
-            Restrict data to values before the end_date (inclusive). 
-            If no value is provided, the end_date of the log is used.
-          required: true
-          schema:
-            type: integer 
-            format: Time in POSIX 
-            example: 12345699
-        - name: include
-          in: query
-          description: Data to add to file (array with temperature and/or humidity)
-          required: true
-          schema:
-            type: array
-            items:
-              type: string
-              enum:
-                - temperature
-                - humidity
-              default: 
-                enum:
-                  - temperature
-                  - humidity
-        - name: file_type
-          in: query
-          description: File type to retrieve
-          schema:
-            type: string
-            enum:
-              - csv
-            default: csv
-        - name: time_correction
-          in: query
-          description: 
-            Choose the type of time correction wanted on log data points
-            time axis. Must be based on start and end dates of log data.
-          schema:
-            type: string
-            example: none
-            enum:
-              - none
-              - step
-              - linear
-            default: none
-      security:
-        - theye_oauth:
-          - read 
+    post:
+      description: Post concatenation file request. 
+      requestBody:
+        description: Encrypted device info 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/devices-concatenation' 
       responses:
         '200': 
           description: OK
