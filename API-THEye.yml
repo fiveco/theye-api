@@ -1052,6 +1052,10 @@ components:
           type: number 
           description: "The window (start_date, end_date) mean temperature."
           example: 25
+        temperature_mkt:
+          type: number 
+          description: "The window (start_date, end_date) mean kinetic temperature."
+          example: 25
         temperature_max:
           type: number 
           description: "The window (start_date, end_date) max temperature."
