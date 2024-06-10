@@ -2255,6 +2255,16 @@ paths:
           schema:
             type: boolean 
             default: False
+        - name: activation_energy
+          in: query 
+          description: 
+            Used to compute MKT. 'Activation energy H is the minimum amount of 
+            energy that must be available to reactants for a chemical reaction 
+            to occur'. Must be a positive value in J/mol. By default, use a 
+            commonly used value in pharma.
+          schema:
+            type: float 
+            default: 83144.72
 
       responses:
         '200':
