@@ -2230,6 +2230,31 @@ paths:
               - step
               - linear
             default: none
+        - name: interval_inf
+          in: query 
+          description: 
+            Used to determine the start_date with which compute the stats.
+            start_date (query) + interval_inf (query) = start_date of web graph.
+            By default, equal interval_sup (if existing) or 0.
+          schema:
+            type: integer 
+            format: Time in POSIX 
+        - name: interval_sup
+          in: query 
+          description: 
+            Used to determine the end_date with which compute the stats.
+            end_date (query) - interval_sup (query) = end_date of web graph.
+            By default, equal interval_inf (if existing) or 0.
+          schema:
+            type: integer 
+            format: Time in POSIX 
+        - name: stat_only
+          in: query 
+          description: 
+            If True, only the stats are returned (min, max, mean, mkt).
+          schema:
+            type: boolean 
+            default: False
 
       responses:
         '200':
