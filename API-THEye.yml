@@ -758,6 +758,13 @@ components:
             - step
             - linear
           default: none
+        quantity:
+          description:
+            Restrict point quantity on the graph to less than the quantity parameter. 
+            If no value is provided, the max default value is used (3600).
+          type: int
+          example: 3600
+          default: 3600
     device-specification:
       type: object
       properties:
