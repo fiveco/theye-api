@@ -632,7 +632,7 @@ components:
                 example : 40 
         status:
           $ref: '#/components/schemas/status'
-    task-status:
+    task-status: #not sure if I need to modify this
       type: object
       properties:
         nonce:
@@ -713,7 +713,7 @@ components:
             - step
             - linear
           default: none
-    devices-concatenation-file:
+    device-file: #not sure if I modified it correctly
       type: object
       properties:
         file:
@@ -721,6 +721,43 @@ components:
           description: "File required"
         status:
           $ref: '#/components/schemas/status'
+    device-certificate: 
+      type: object
+      properties:
+        start_date:
+          description: 
+            Restrict data to values after the start_date (inclusive). 
+            If no value is provided, the start_date of the first log is used.
+          type: integer 
+          format: Time in POSIX 
+          example: 12345678
+        end_date:
+          description: 
+            Restrict data to values before the end_date (inclusive). 
+            If no value is provided, the end_date of the last log is used.
+          type: integer 
+          format: Time in POSIX 
+          example: 12345699
+        include:
+          description: Data to add to file (array with temperature and/or humidity)
+          type: array
+          items:
+            type: string
+            enum:
+              - temperature
+              - humidity
+          default: ['temperature','humidity']
+        time_correction:
+          description: 
+            Choose the type of time correction wanted on log data points
+            time axis. Must be based on start and end dates of log data.
+          type: string
+          example: none
+          enum:
+            - none
+            - step
+            - linear
+          default: none
     device-specification:
       type: object
       properties:
@@ -1794,6 +1831,121 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/status-response' 
+  /devices/{device-id}/certificate/:
+    post:
+      description: Post certificate generation request. 
+      parameters:
+        - name: device-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: base16
+            maxLength: 12 
+            minLength: 12 
+            example: 0123456789AB
+      requestBody:
+        description: Encrypted device info 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/device-certificate'
+      responses:
+        '200': 
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/task-status'                   
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response'  
+  /devices/{device-id}/certificate/{nonce-id}/: #do the same for certificate
+    get:
+      description: Retrieve certificate creation task state
+      parameters:
+        - name: device-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: base16
+            maxLength: 12 
+            minLength: 12 
+            example: 0123456789AB
+        - name: nonce-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: base16
+            maxLength: 24 
+            minLength: 24 
+            example: 00112233445566778899AABB
+            readOnly: true
+      security:
+        - theye_oauth:
+          - read 
+      responses:
+        '200': 
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/task-status'                   
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+  /devices/concatenation/{nonce-id}/file/: #do the same for certificate
+    get:
+      description: Retrieve certificate (status must be finished=true)
+      parameters:
+        - name: device-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: base16
+            maxLength: 12 
+            minLength: 12 
+            example: 0123456789AB
+        - name: nonce-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: base16
+            maxLength: 24 
+            minLength: 24 
+            example: 00112233445566778899AABB
+            readOnly: true
+      security:
+        - theye_oauth:
+          - read 
+      responses:
+        '200': 
+          description: OK
+          content: 
+            text/csv:
+              schema:
+                format: file                
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden. 
+        '404':
+          description: Not found (may be a bad nonce id)
   /devices/{device-id}/check-synchronization:
     put:
       description: Check wheter the device is synchronized with the server or not.
