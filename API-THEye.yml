@@ -765,6 +765,11 @@ components:
           type: int
           example: 3600
           default: 3600
+        isRawData:
+          description:
+            Boolean to include or not the raw data table.
+          type: bool
+          default: False
     device-specification:
       type: object
       properties:
