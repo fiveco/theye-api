@@ -1188,6 +1188,62 @@ components:
             - 50.00 
             - 50.10 
             - 49.90 
+        new_pb_causes:
+          type: object
+          properties:
+            start_new_log:
+              type: array
+              items:
+                type: number
+                description: Timestamps at wich a PageBlock was started because of the beginning of a new log
+              example: 
+                -1708532141
+                -1708574369
+            last_page_full:
+              type: array
+              items:
+                type: number
+                description: Timestamps at wich a PageBlock was started because the last PageBlock was full
+              example: 
+                -1708532141
+                -1708574369
+            proc_reset:
+              type: array
+              items:
+                type: number
+                description: Timestamps at wich a PageBlock was started because of a processor reset
+              example: 
+                -1708532141
+                -1708574369
+            sensor_reset:
+              type: array
+              items:
+                type: number
+                description: Timestamps at wich a PageBlock was started because of a sensor reset
+              example: 
+                -1708532141
+                -1708574369
+            bytes_corrupt:
+              type: array
+              items:
+                type: number
+                description: Timestamps at wich a PageBlock was started because of some corrupted bytes
+              example: 
+                -1708532141
+                -1708574369
+            other_causes:
+              type: array
+              items:
+                type: object
+                properties:
+                  HC:
+                    type: number
+                    description: Header code, causes of the new page block
+                    example: 0xC0
+                  time:
+                    type: number
+                    description: Timestamps at wich a PageBlock was started because of this specific cause
+                    example: 1708574369  
         status:
           $ref: '#/components/schemas/status'
     ownership-code:
