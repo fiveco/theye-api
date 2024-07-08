@@ -1757,7 +1757,7 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/{nonce-id}/status/:
     get:
-      description: Retrieve concatenation file creation task state
+      description: Retrieve file creation task state
       parameters:
         - name: nonce-id
           in: path
@@ -1789,7 +1789,7 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/{nonce-id}/file/:
     get:
-      description: Retrieve concatenation file (status must be finished=true)
+      description: Retrieve created file (status must be finished=true)
       parameters:
         - name: nonce-id
           in: path
