@@ -1755,7 +1755,7 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/status-response' 
-  /devices/{nonce-id}/status/:
+  /devicesfiles/{nonce-id}/status/:
     get:
       description: Retrieve file creation task state
       parameters:
@@ -1787,7 +1787,7 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/status-response' 
-  /devices/{nonce-id}/file/:
+  /devices/files/{nonce-id}/file/:
     get:
       description: Retrieve created file (status must be finished=true)
       parameters:
