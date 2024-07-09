@@ -542,6 +542,10 @@ components:
                   last_name:
                     type: string
                     example: Wonderland
+              not_viewed_logs_count:
+                description: number of logs from this device the requesting user hasn't seen since the last modification 
+                type: int
+                example: 3
               type:
                 type: integer
                 example: 10
@@ -1253,7 +1257,10 @@ components:
                   time:
                     type: number
                     description: Timestamps at wich a PageBlock was started because of this specific cause
-                    example: 1708574369  
+                    example: 1708574369
+        viewed:
+          type: boolean
+          example: true 
         status:
           $ref: '#/components/schemas/status'
     ownership-code:
@@ -1679,6 +1686,33 @@ paths:
                 $ref : '#/components/schemas/devices' 
         '401':
           description: Unauthorized.
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+  /devices/set-all-logs-viewed/:
+    put:
+      description: Set all logs of a devicelist as viewed by a user.
+      security:
+        - theye_oauth:
+          - write 
+      responses:
+        '200': 
+          description: Ok, device updated 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/devices'
+        '401':
+          description: Unauthorized. 
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
         '403':
           description: Forbidden. 
           content:
@@ -2278,6 +2312,39 @@ paths:
                 $ref : '#/components/schemas/status-response' 
         '500':
           description: Internal server error. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+  /devices/{device-id}/set-all-logs-viewed/:
+    put:
+      description: Set all logs of a single device as viewed by a user.
+      security:
+        - theye_oauth:
+          - write 
+      responses:
+        '200': 
+          description: Ok, logs updated 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/logs'
+        '401':
+          description: Unauthorized. 
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '404':
+          description: Not found. 
           content:
             application/json:
               schema:
