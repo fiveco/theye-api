@@ -1253,7 +1253,10 @@ components:
                   time:
                     type: number
                     description: Timestamps at wich a PageBlock was started because of this specific cause
-                    example: 1708574369  
+                    example: 1708574369
+        viewed:
+          type: boolean
+          example: true 
         status:
           $ref: '#/components/schemas/status'
     ownership-code:
