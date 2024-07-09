@@ -542,6 +542,10 @@ components:
                   last_name:
                     type: string
                     example: Wonderland
+              not_viewed_logs_count:
+                description: number of logs from this device the requesting user hasn't seen since the last modification 
+                type: int
+                example: 3
               type:
                 type: integer
                 example: 10
