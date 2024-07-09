@@ -3,7 +3,7 @@ info:
   title: API THEye
   description: "THEye backend server API description."
   termsOfService: https://theye.ch/en/terms
-  version: '0.41.3'
+  version: '0.42.5'
   contact: 
     name: FiveCo Innovative Engineering
     url: https://www.fiveco.ch
@@ -1512,6 +1512,9 @@ components:
           type: string
           example: chf 
           readOnly: True
+        enable_elog_report:
+          type: boolean
+          description: "Set if an email is sent to user when new log data have been pushed to server."
         status:
           $ref: '#/components/schemas/status'
     profile-delete:
