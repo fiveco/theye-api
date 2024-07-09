@@ -1692,6 +1692,33 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/status-response' 
+  /devices/set-all-logs-viewed/:
+    put:
+      description: Set all logs of a devicelist as viewed by a user.
+      security:
+        - theye_oauth:
+          - write 
+      responses:
+        '200': 
+          description: Ok, device updated 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/devices'
+        '401':
+          description: Unauthorized. 
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
   /devices/summary/:
     get:
       description: Get devices summary.
