@@ -1755,7 +1755,7 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/status-response' 
-  /devicesfiles/{nonce-id}/status/:
+  /devices/files/{nonce-id}/status/:
     get:
       description: Retrieve file creation task state
       parameters:
