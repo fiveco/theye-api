@@ -3,7 +3,7 @@ info:
   title: API THEye
   description: "THEye backend server API description."
   termsOfService: https://theye.ch/en/terms
-  version: '0.42.5'
+  version: '0.42.6'
   contact: 
     name: FiveCo Innovative Engineering
     url: https://www.fiveco.ch
@@ -1202,6 +1202,15 @@ components:
             - 50.00 
             - 50.10 
             - 49.90 
+        missing_data_intervals:
+          type: array
+          description: List of times pair within no data is present
+          items:
+            type: array
+            description: time pairs
+            example: 
+              - 1649721600
+              - 1651190400
         new_pb_causes:
           type: object
           properties:
