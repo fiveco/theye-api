@@ -1270,6 +1270,104 @@ components:
         viewed:
           type: boolean
           example: true 
+        device_infos:
+          type: array
+          items:
+            type: object
+            properties:
+              time:
+                type: number
+                description: Timestamps at which this device info should be considered
+                example: 1708532141
+              info:
+                type: object
+                readOnly: true
+                properties:
+                  info_version:
+                    type: integer
+                    example: 0
+                  type:
+                    type: integer
+                    example: 10
+                  model:
+                    type: integer
+                    example: 11
+                  firmware:
+                    type: string
+                    example: 1.2
+                  hardware:
+                    type: string
+                    example: 2.3
+                  device_id:
+                    type: string 
+                    format: base16
+                    maxLength: 12 
+                    minLength: 12 
+                    example: 0123456789AB 
+                  time_id:
+                    type: integer
+                    example: "123456"
+                  local_name:
+                    type: string
+                    maxLength: 16
+                    example: Kitchen
+                  battery_voltage:
+                    type: integer
+                    description: Battery voltage in mV [V]
+                    example: "3300"
+                  log_interval:
+                    type: object
+                    properties:
+                      interval:
+                        type: integer 
+                        description: Interval time in [s]
+                        example: 10
+                      stop_recording:
+                        type: boolean
+                        example: false
+                      stop_memory_full:
+                        type: boolean
+                        example: true
+                  limits:
+                    type: object
+                    properties:
+                      thresholds:
+                        type: object
+                        properties:
+                          lowest_temperature:
+                            type: integer
+                            description: Temperature in 0.01 [°C] 
+                          highest_temperature:
+                            type: integer
+                            description: Temperature in 0.01 [°C]
+                          lowest_humidity:
+                            type: integer
+                            description: Humidity in 0.01 [%]
+                          highest_humidity:
+                            type: integer
+                            description: Humidity in 0.01 [%]
+                      alerts:
+                        type: object
+                        properties:
+                          current_temperature:
+                            type: boolean
+                          past_temperature:
+                            type: boolean
+                          past_temperature_resettable:
+                            type: boolean
+                          current_humidity:
+                            type: boolean
+                          past_humidity:
+                            type: boolean
+                          past_humidity_resettable:
+                            type: boolean
+                      config:
+                        type: object
+                        properties:
+                          hidden:
+                            type: boolean
+                          tested:
+                            type: boolean
         status:
           $ref: '#/components/schemas/status'
     ownership-code:
