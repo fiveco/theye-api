@@ -1219,41 +1219,41 @@ components:
               items:
                 type: number
                 description: Timestamps at wich a PageBlock was started because of the beginning of a new log
-              example: 
-                -1708532141
-                -1708574369
+                example: 
+                  - 1708532141
+                  - 1708574369
             last_page_full:
               type: array
               items:
                 type: number
                 description: Timestamps at wich a PageBlock was started because the last PageBlock was full
-              example: 
-                -1708532141
-                -1708574369
+                example: 
+                  - 1708532141
+                  - 1708574369
             proc_reset:
               type: array
               items:
                 type: number
                 description: Timestamps at wich a PageBlock was started because of a processor reset
-              example: 
-                -1708532141
-                -1708574369
+                example: 
+                  - 1708532141
+                  - 1708574369
             sensor_reset:
               type: array
               items:
                 type: number
                 description: Timestamps at wich a PageBlock was started because of a sensor reset
-              example: 
-                -1708532141
-                -1708574369
+                example: 
+                  - 1708532141
+                  - 1708574369
             bytes_corrupt:
               type: array
               items:
                 type: number
                 description: Timestamps at wich a PageBlock was started because of some corrupted bytes
-              example: 
-                -1708532141
-                -1708574369
+                example: 
+                  - 1708532141
+                  - 1708574369
             other_causes:
               type: array
               items:
