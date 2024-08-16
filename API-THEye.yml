@@ -3,7 +3,7 @@ info:
   title: API THEye
   description: "THEye backend server API description."
   termsOfService: https://theye.ch/en/terms
-  version: '0.42.8'
+  version: '0.43.0'
   contact: 
     name: FiveCo Innovative Engineering
     url: https://www.fiveco.ch
@@ -1627,9 +1627,9 @@ components:
           description: "Set if an email is sent to user when new log data have been pushed to server."
         status:
           $ref: '#/components/schemas/status'
-        frequency_alarm_report:
-          type: integer
-          description: Define the minumum delay in seconds between two alarm emails for the same device. 0 means no alarm email.
+        enable_alarms_report:
+          type: boolean
+          description: Set if an email is sent to user when an new alarm is detected.
     profile-delete:
       type: object
       properties:
