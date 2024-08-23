@@ -665,6 +665,10 @@ components:
           type: string
           description: Error reason
           example: Lorem ipsum
+        celery_task_id:
+          type: string
+          description: id of the celery task
+          example: 'd9078da5-9915-40a0-bfa1-392c7bde42ed'
         status:
           $ref: '#/components/schemas/status'
     devices-concatenation:
@@ -1937,6 +1941,54 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/status-response' 
+        '404':
+          description: Not found (may be a bad nonce id)
+    put:
+      description: Cancel celery task
+      parameters:
+        - name: nonce-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: base16
+            maxLength: 24 
+            minLength: 24 
+            example: 00112233445566778899AABB
+            readOnly: true
+      requestBody:
+        description: isCancelled boolean
+        required: true
+        content:
+          application/json:
+            schema:
+              type: boolean 
+      security:
+        - theye_oauth:
+          - read 
+      responses:
+        '200': 
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/task-status'   
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response'                 
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '404':
+          description: Not found (may be a bad nonce id)
   /devices/files/{nonce-id}/file/:
     get:
       description: Retrieve created file (status must be finished=true)
