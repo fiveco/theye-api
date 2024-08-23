@@ -1957,7 +1957,7 @@ paths:
             example: 00112233445566778899AABB
             readOnly: true
       requestBody:
-        description: isCancelled boolean
+        description: isCancelled boolean # here it is false, isCancelled is a field and should be set to true
         required: true
         content:
           application/json:
