@@ -3,7 +3,7 @@ info:
   title: API THEye
   description: "THEye backend server API description."
   termsOfService: https://theye.ch/en/terms
-  version: '0.43.1'
+  version: '0.43.2'
   contact: 
     name: FiveCo Innovative Engineering
     url: https://www.fiveco.ch
@@ -775,6 +775,11 @@ components:
         isRawData:
           description:
             Boolean to include or not the raw data table.
+          type: bool
+          default: False
+        isSigned:
+          description:
+            Boolean to sign or not the pdf.
           type: bool
           default: False
     device-specification:
