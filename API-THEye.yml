@@ -3,7 +3,7 @@ info:
   title: API THEye
   description: "THEye backend server API description."
   termsOfService: https://theye.ch/en/terms
-  version: '0.43.0'
+  version: '0.43.1'
   contact: 
     name: FiveCo Innovative Engineering
     url: https://www.fiveco.ch
@@ -665,10 +665,9 @@ components:
           type: string
           description: Error reason
           example: Lorem ipsum
-        celery_task_id:
-          type: string
-          description: id of the celery task
-          example: 'd9078da5-9915-40a0-bfa1-392c7bde42ed'
+        cancelled:
+          type: boolean
+          default: false
         status:
           $ref: '#/components/schemas/status'
     devices-concatenation:
@@ -1957,12 +1956,17 @@ paths:
             example: 00112233445566778899AABB
             readOnly: true
       requestBody:
-        description: isCancelled boolean # here it is false, isCancelled is a field and should be set to true
+        description: Used to cancel a celery task using its nonce id and a boolean isCancelled.
         required: true
         content:
-          application/json:
-            schema:
-              type: boolean 
+        application/json:
+          schema:
+            type: object
+            properties:
+              isCancelled:
+                type: boolean
+                description: Indicates if the task is cancelled.
+                example: true
       security:
         - theye_oauth:
           - read 
