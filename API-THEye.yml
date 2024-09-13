@@ -777,6 +777,11 @@ components:
             Boolean to include or not the raw data table.
           type: bool
           default: False
+        isSigned:
+          description:
+            Boolean to sign or not the pdf.
+          type: bool
+          default: False
     device-specification:
       type: object
       properties:
