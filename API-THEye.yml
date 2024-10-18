@@ -544,7 +544,7 @@ components:
                     example: Wonderland
               not_viewed_logs_count:
                 description: number of logs from this device the requesting user hasn't seen since the last modification 
-                type: int
+                type: integer
                 example: 3
               type:
                 type: integer
@@ -772,18 +772,18 @@ components:
           description:
             Restrict point quantity on the graph to less than the quantity parameter. 
             If no value is provided, the max default value is used (3600).
-          type: int
+          type: integer
           example: 3600
           default: 3600
         isRawData:
           description:
             Boolean to include or not the raw data table.
-          type: bool
+          type: boolean
           default: False
         isSigned:
           description:
             Boolean to sign or not the pdf.
-          type: bool
+          type: boolean
           default: False
     device-specification:
       type: object
@@ -935,6 +935,27 @@ components:
               type: number
               example: 0.03
               description: Long term temperature drift in [°C/year]
+            measure_conversion:
+              type: object
+              properties:
+                temperature:
+                  type: object
+                  properties:
+                    C:
+                      type: number
+                      example: -46.85
+                    D: 
+                      type: number
+                      example: 175.72
+                humidity:
+                  type: object
+                  properties:
+                    C:
+                      type: number
+                      example: -6
+                    D: 
+                      type: number
+                      example: 125
     device-specifications:
       type: object
       properties:
@@ -1967,14 +1988,14 @@ paths:
         description: Used to cancel a celery task using its nonce id and a boolean isCancelled.
         required: true
         content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              isCancelled:
-                type: boolean
-                description: Indicates if the task is cancelled.
-                example: true
+          application/json:
+            schema:
+              type: object
+              properties:
+                isCancelled:
+                  type: boolean
+                  description: Indicates if the task is cancelled.
+                  example: true
       security:
         - theye_oauth:
           - read 
@@ -2681,7 +2702,7 @@ paths:
             to occur'. Must be a positive value in J/mol. By default, use a 
             commonly used value in pharma.
           schema:
-            type: float 
+            type: number 
             default: 83144.72
 
       responses:
