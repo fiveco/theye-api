@@ -873,6 +873,10 @@ components:
                   type: number
                   example: 100 
                   description: Temperature min in [°C] 
+        sensor: 
+          readOnly: true
+          type: string
+          example: SHT21
         sensor_parameters:
           readOnly: true
           type: object
@@ -956,6 +960,10 @@ components:
                     D: 
                       type: number
                       example: 125
+        battery:
+          readOnly: true
+          type: string
+          example: CR1632
     device-specifications:
       type: object
       properties:
