@@ -1091,6 +1091,23 @@ components:
       maxLength: 32 
       minLength: 32 
       example: 00112233445566778899AABBCCDDEEFF
+    identification_token:
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/16bytes_code'
+        expires:
+          type: string
+          format: iso-8601
+          example: 2021-01-18T16:32:10.000000Z
+        device_id:
+          type: string 
+          format: base16
+          maxLength: 12 
+          minLength: 12 
+          example: 0123456789AB 
+        status:
+          $ref: '#/components/schemas/status'
     logs:
       type: object
       properties:
@@ -3073,7 +3090,7 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/token/:
     post:
-      description: Create an Identification Token link to a device if the server code in the request is valid. 
+      description: Create an Identification Token linked to a device if the server code in the request is valid. 
       parameters:
         - name: device-id
           in: path
@@ -3097,7 +3114,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/status-response' 
+                $ref : '#/components/schemas/identification_token' 
         '400':
           description: Bad request. 
           content:
