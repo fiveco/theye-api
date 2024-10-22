@@ -945,25 +945,27 @@ components:
                 temperature:
                   type: object
                   properties:
-                    C:
+                    offset:
                       type: number
-                      example: -46.85
-                    D: 
+                      example: -45
+                    factor_degree1: 
                       type: number
-                      example: 175.72
+                      example: 0.08544921875
+                    factor_degree2: 
+                      type: number
+                      example: 0
                 humidity:
                   type: object
                   properties:
-                    C:
+                    offset:
                       type: number
-                      example: -6
-                    D: 
+                      example: 0
+                    factor_degree1: 
                       type: number
-                      example: 125
-        battery:
-          readOnly: true
-          type: string
-          example: CR1632
+                      example: 0.048828125
+                    factor_degree2: 
+                      type: number
+                      example: 0
     device-specifications:
       type: object
       properties:
