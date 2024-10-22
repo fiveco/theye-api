@@ -364,7 +364,7 @@ components:
         time_id:
           type: integer 
           example: 314 
-    device:
+    device_base:
       type: object
       properties:
         id:
@@ -511,6 +511,22 @@ components:
                           type: boolean
         status:
           $ref: '#/components/schemas/status'
+    gateway_device:
+      allOf:
+        - $ref: '#/components/schemas/device_base'
+        - type: object
+          properties:
+            firmware_version:
+              type: string
+              description: "Firmware version of the device to modify (max 255.255.255)"
+              example: "0.2.15"
+    theye_device:
+      allOf:
+        - $ref: '#/components/schemas/device_base'
+    device:
+      oneOf:
+        - $ref: '#/components/schemas/gateway_device'
+        - $ref: '#/components/schemas/theye_device'
     devices:
       type: object
       properties:
@@ -1069,6 +1085,12 @@ components:
           type: boolean 
         locking: 
           type: boolean 
+    16bytes_code:
+      type: string
+      format: base16
+      maxLength: 32 
+      minLength: 32 
+      example: 00112233445566778899AABBCCDDEEFF
     logs:
       type: object
       properties:
@@ -1463,11 +1485,7 @@ components:
           type: integer
           example: 314 
         encrypted_code:
-          type: string
-          format: base16
-          maxLength: 32 
-          minLength: 32 
-          example: 00112233445566778899AABBCCDDEEFF
+          $ref: '#/components/schemas/16bytes_code'
     ownership-token:
       type: object
       properties:
@@ -1475,11 +1493,7 @@ components:
           type: integer
           example: 314 
         encrypted_code:
-          type: string
-          format: base16
-          maxLength: 32 
-          minLength: 32 
-          example: 00112233445566778899AABBCCDDEEFF
+          $ref: '#/components/schemas/16bytes_code'
         ownership_factory_code:
           type: string
           format: base16
@@ -1849,7 +1863,7 @@ paths:
     get:
       description: Get all devices of the user.
       parameters:
-        - name: owner 
+        - name: owner #TODO should we really put this here ? As we have the security scheme
           in : query
           description: Filter by device owner.
           schema:
@@ -1857,7 +1871,7 @@ paths:
             items:
               type: integer
               example: 314
-        - name: organization 
+        - name: organization #TODO should we really put this here ? As we have the security scheme
           in : query
           description: Filter by organization.
           schema:
@@ -1865,7 +1879,7 @@ paths:
             items:
               type: integer
               example: 314
-        - name: free 
+        - name: free # TODO is this necessary ?? it's not in query ?
           in : query
           description: Filter by free device.
           schema:
@@ -2117,6 +2131,12 @@ paths:
             maxLength: 12 
             minLength: 12 
             example: 0123456789AB 
+        - name: id_token
+          in: query
+          description: "Identification Token used by autonomous device to make specific requests without being authentificated."
+          required: false
+          schema:
+            $ref: '#/components/schemas/16bytes_code'
       security:
         - theye_oauth:
           - read 
@@ -2165,7 +2185,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref : '#/components/schemas/device' 
+              allOf:
+              - $ref : '#/components/schemas/device' 
+              - type: object
+                properties:
+                  id_token:
+                    description: "Identification Token used by autonomous device to make specific requests without being authentificated (optionnal)."
+                    type: string
+                    format: base16
+                    maxLength: 12 
+                    minLength: 12 
+                  
       security:
         - theye_oauth:
           - write 
@@ -3005,7 +3035,7 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/public-info/:
      get:
-      description: Get public info about the device.
+      description: Get public info about the theye-device.
       parameters:
         - name: device-id
           in: path
