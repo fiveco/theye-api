@@ -1415,7 +1415,7 @@ components:
           example: true 
         status:
           $ref: '#/components/schemas/status'
-    ownership-code:
+    server-code:
       type: object
       properties:
         code: 
@@ -1456,7 +1456,37 @@ components:
         Example: device_code=0123456789AB and code=CDEF1011 become 
         AB89674523011110EFCD (AB:89:67:45:23:01 11:10:EF:CD) in QRCode.'
 
+    encrypted_code:
+      type: object
+      properties:
+        key_id: 
+          type: integer
+          example: 314 
+        encrypted_code:
+          type: string
+          format: base16
+          maxLength: 32 
+          minLength: 32 
+          example: 00112233445566778899AABBCCDDEEFF
     ownership-token:
+      type: object
+      properties:
+        key_id: 
+          type: integer
+          example: 314 
+        encrypted_code:
+          type: string
+          format: base16
+          maxLength: 32 
+          minLength: 32 
+          example: 00112233445566778899AABBCCDDEEFF
+        ownership_factory_code:
+          type: string
+          format: base16
+          maxLength: 8 
+          minLength: 8 
+          example: ABCDEF01
+    ownership-token-old:
       type: object
       properties:
         key_id: 
@@ -1474,6 +1504,15 @@ components:
           maxLength: 8 
           minLength: 8 
           example: ABCDEF01
+    download-file:
+      type: object
+      properties:
+        download_url:
+          type: string
+          example: https://some/url/
+        file_name:
+          type: string
+          example: file_name.csv
     password:
       type: object
       properties:
@@ -2822,7 +2861,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref : '#/components/schemas/ownership-token' 
+              $ref : '#/components/schemas/ownership-token-old' 
       security:
         - theye_oauth:
           - write 
@@ -2984,6 +3023,106 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/device-public-info' 
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '404':
+          description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+  /devices/{device-id}/token/:
+    post:
+      description: Create an Identification Token link to a device if the server code in the request is valid. 
+      parameters:
+        - name: device-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: base16
+            maxLength: 12 
+            minLength: 12 
+            example: 0123456789AB 
+      requestBody:
+        description: Encrypted Server Code and the key_id used to encrypt it. 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/encrypted_code' 
+      responses:
+        '201': 
+          description: Ok, Identification Token created. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '404':
+          description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '500':
+          description: Internal server error. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response'
+  /devices/{device-id}/update-fw-version/:
+    get:
+      description: Get the download url of the target firmware version.
+      parameters:
+        - name: device-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: base16
+            maxLength: 12 
+            minLength: 12 
+            example: 0123456789AB 
+        - name: id_token
+          in: query 
+          description: 
+            Identification Token
+          schema:
+            type: string 
+            format: base16
+            maxLength: 32 
+            minLength: 32 
+            example: 00112233445566778899AABBCCDDEEFF 
+          
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/download-file'
         '400':
           description: Bad request. 
           content:
@@ -3197,7 +3336,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/ownership-code' 
+                $ref : '#/components/schemas/server-code' 
         '401':
           description: Unauthorized.
         '403':
@@ -3869,3 +4008,13 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/status-response' 
+  /server-code-request/:
+    post:
+      description:  Create a server code (and send it to the client making the request). 
+      responses:
+        '201':
+          description: Created 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/server-code' 
