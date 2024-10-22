@@ -924,6 +924,33 @@ components:
               type: number
               example: 0.03
               description: Long term temperature drift in [°C/year]
+            measure_conversion:
+              type: object
+              properties:
+                temperature:
+                  type: object
+                  properties:
+                    offset:
+                      type: number
+                      example: -45
+                    factor_degree1: 
+                      type: number
+                      example: 0.08544921875
+                    factor_degree2: 
+                      type: number
+                      example: 0
+                humidity:
+                  type: object
+                  properties:
+                    offset:
+                      type: number
+                      example: 0
+                    factor_degree1: 
+                      type: number
+                      example: 0.048828125
+                    factor_degree2: 
+                      type: number
+                      example: 0
     device-specifications:
       type: object
       properties:
