@@ -261,6 +261,16 @@ components:
             maxLength: 12 
             minLength: 12 
           example: ["0123456789AB", "001122334455"]
+        note:
+          type: string
+          example: some note
+        manufacturer:
+          type: string
+          example: Eurocircuits
+        manufacture_date:
+          type: string
+          format: date
+          example: 2021-01-18
         status:
           $ref: '#/components/schemas/status'
     record:
