@@ -3,7 +3,7 @@ info:
   title: API THEye
   description: "THEye backend server API description."
   termsOfService: https://theye.ch/en/terms
-  version: '0.44.0'
+  version: '0.44.1'
   contact: 
     name: FiveCo Innovative Engineering
     url: https://www.fiveco.ch
@@ -530,6 +530,10 @@ components:
               type: string
               description: "Firmware version of the device to modify (max 255.255.255)"
               example: "0.2.15"
+            last_seen_date:
+              type: string 
+              format: iso-8601
+              example: 2021-01-18T16:32:10.000000Z
     theye_device:
       allOf:
         - $ref: '#/components/schemas/device_base'
