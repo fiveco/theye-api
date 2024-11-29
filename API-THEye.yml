@@ -374,7 +374,7 @@ components:
         time_id:
           type: integer 
           example: 314 
-    device:
+    device_base:
       type: object
       properties:
         id:
@@ -521,6 +521,22 @@ components:
                           type: boolean
         status:
           $ref: '#/components/schemas/status'
+    gateway_device:
+      allOf:
+        - $ref: '#/components/schemas/device_base'
+        - type: object
+          properties:
+            firmware_version:
+              type: string
+              description: "Firmware version of the device to modify (max 255.255.255)"
+              example: "0.2.15"
+    theye_device:
+      allOf:
+        - $ref: '#/components/schemas/device_base'
+    device:
+      oneOf:
+        - $ref: '#/components/schemas/gateway_device'
+        - $ref: '#/components/schemas/theye_device'
     devices:
       type: object
       properties:
@@ -1079,6 +1095,29 @@ components:
           type: boolean 
         locking: 
           type: boolean 
+    16bytes_code:
+      type: string
+      format: base16
+      maxLength: 32 
+      minLength: 32 
+      example: 00112233445566778899AABBCCDDEEFF
+    identification_token:
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/16bytes_code'
+        expires:
+          type: string
+          format: iso-8601
+          example: 2021-01-18T16:32:10.000000Z
+        device_id:
+          type: string 
+          format: base16
+          maxLength: 12 
+          minLength: 12 
+          example: 0123456789AB 
+        status:
+          $ref: '#/components/schemas/status'
     logs:
       type: object
       properties:
@@ -1425,7 +1464,7 @@ components:
           example: true 
         status:
           $ref: '#/components/schemas/status'
-    ownership-code:
+    server-code:
       type: object
       properties:
         code: 
@@ -1466,7 +1505,29 @@ components:
         Example: device_code=0123456789AB and code=CDEF1011 become 
         AB89674523011110EFCD (AB:89:67:45:23:01 11:10:EF:CD) in QRCode.'
 
+    encrypted_code:
+      type: object
+      properties:
+        key_id: 
+          type: integer
+          example: 314 
+        encrypted_code:
+          $ref: '#/components/schemas/16bytes_code'
     ownership-token:
+      type: object
+      properties:
+        key_id: 
+          type: integer
+          example: 314 
+        encrypted_code:
+          $ref: '#/components/schemas/16bytes_code'
+        ownership_factory_code:
+          type: string
+          format: base16
+          maxLength: 8 
+          minLength: 8 
+          example: ABCDEF01
+    ownership-token-old:
       type: object
       properties:
         key_id: 
@@ -1484,6 +1545,15 @@ components:
           maxLength: 8 
           minLength: 8 
           example: ABCDEF01
+    download-file:
+      type: object
+      properties:
+        download_url:
+          type: string
+          example: https://some/url/
+        file_name:
+          type: string
+          example: file_name.csv
     password:
       type: object
       properties:
@@ -1820,7 +1890,7 @@ paths:
     get:
       description: Get all devices of the user.
       parameters:
-        - name: owner 
+        - name: owner #TODO should we really put this here ? As we have the security scheme
           in : query
           description: Filter by device owner.
           schema:
@@ -1828,7 +1898,7 @@ paths:
             items:
               type: integer
               example: 314
-        - name: organization 
+        - name: organization #TODO should we really put this here ? As we have the security scheme
           in : query
           description: Filter by organization.
           schema:
@@ -1836,7 +1906,7 @@ paths:
             items:
               type: integer
               example: 314
-        - name: free 
+        - name: free # TODO is this necessary ?? it's not in query ?
           in : query
           description: Filter by free device.
           schema:
@@ -2088,6 +2158,12 @@ paths:
             maxLength: 12 
             minLength: 12 
             example: 0123456789AB 
+        - name: id_token
+          in: query
+          description: "Identification Token used by autonomous device to make specific requests without being authentificated."
+          required: false
+          schema:
+            $ref: '#/components/schemas/16bytes_code'
       security:
         - theye_oauth:
           - read 
@@ -2136,7 +2212,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref : '#/components/schemas/device' 
+              allOf:
+              - $ref : '#/components/schemas/device' 
+              - type: object
+                properties:
+                  id_token:
+                    description: "Identification Token used by autonomous device to make specific requests without being authentificated (optionnal)."
+                    type: string
+                    format: base16
+                    maxLength: 12 
+                    minLength: 12 
+                  
       security:
         - theye_oauth:
           - write 
@@ -2832,7 +2918,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref : '#/components/schemas/ownership-token' 
+              $ref : '#/components/schemas/ownership-token-old' 
       security:
         - theye_oauth:
           - write 
@@ -2976,7 +3062,7 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/public-info/:
      get:
-      description: Get public info about the device.
+      description: Get public info about the theye-device.
       parameters:
         - name: device-id
           in: path
@@ -2994,6 +3080,106 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/device-public-info' 
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '404':
+          description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+  /devices/{device-id}/token/:
+    post:
+      description: Create an Identification Token linked to a device if the server code in the request is valid. 
+      parameters:
+        - name: device-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: base16
+            maxLength: 12 
+            minLength: 12 
+            example: 0123456789AB 
+      requestBody:
+        description: Encrypted Server Code and the key_id used to encrypt it. 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/encrypted_code' 
+      responses:
+        '201': 
+          description: Ok, Identification Token created. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/identification_token' 
+        '400':
+          description: Bad request. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '403':
+          description: Forbidden. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '404':
+          description: Not found. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response' 
+        '500':
+          description: Internal server error. 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/status-response'
+  /devices/{device-id}/update-fw-version/:
+    get:
+      description: Get the download url of the target firmware version.
+      parameters:
+        - name: device-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: base16
+            maxLength: 12 
+            minLength: 12 
+            example: 0123456789AB 
+        - name: id_token
+          in: query 
+          description: 
+            Identification Token
+          schema:
+            type: string 
+            format: base16
+            maxLength: 32 
+            minLength: 32 
+            example: 00112233445566778899AABBCCDDEEFF 
+          
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/download-file'
         '400':
           description: Bad request. 
           content:
@@ -3207,7 +3393,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/ownership-code' 
+                $ref : '#/components/schemas/server-code' 
         '401':
           description: Unauthorized.
         '403':
@@ -3879,3 +4065,13 @@ paths:
             application/json:
               schema:
                 $ref : '#/components/schemas/status-response' 
+  /server-code-request/:
+    post:
+      description:  Create a server code (and send it to the client making the request). 
+      responses:
+        '201':
+          description: Created 
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/server-code' 
