@@ -3,7 +3,7 @@ info:
   title: API THEye
   description: "THEye backend server API description."
   termsOfService: https://theye.ch/en/terms
-  version: '0.45.0'
+  version: '0.46.0'
   contact: 
     name: FiveCo Innovative Engineering
     url: https://www.fiveco.ch
@@ -673,6 +673,11 @@ components:
             head_page_time_id:
               type: number 
               example: 3200000
+            head_pages_time_id:
+              type: array
+              items:
+                type: number
+                example: 3200000
             need_synchronization:
               type: boolean
               example: true
