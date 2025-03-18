@@ -3,7 +3,7 @@ info:
   title: API THEye
   description: "THEye backend server API description."
   termsOfService: https://theye.ch/en/terms
-  version: '0.46.0'
+  version: '0.47.0'
   contact: 
     name: FiveCo Innovative Engineering
     url: https://www.fiveco.ch
@@ -668,15 +668,15 @@ components:
           type: object
           properties:
             start_time_id:
-              type: number 
+              type: integer 
               example: 3141592 
             head_page_time_id:
-              type: number 
+              type: integer 
               example: 3200000
             head_pages_time_id:
               type: array
               items:
-                type: number
+                type: integer
                 example: 3200000
             need_synchronization:
               type: boolean
@@ -1086,9 +1086,18 @@ components:
           maxLength: 32 
           minLength: 32 
           example: 00112233445566778899AABBCCDDEEFF 
+        used_head_time_id:
+            type: integer 
+            example: 3200000
         key_id:
           type: integer 
           example: 314 
+      required:
+        - "device_id"
+        - "edata"
+        - "hash"
+        - "initialization_vector"
+        - "key_id"
     email-change:
       type: object
       properties:
@@ -1229,7 +1238,7 @@ components:
           description: Interval between successive points in seconds.
           readOnly: true
         start_time_id:
-          type: number 
+          type: integer 
           example: 314 
           readOnly: true
         name:
@@ -1397,7 +1406,7 @@ components:
             start_new_log:
               type: array
               items:
-                type: number
+                type: integer
                 description: Timestamps at wich a PageBlock was started because of the beginning of a new log
                 example: 
                   - 1708532141
@@ -1405,7 +1414,7 @@ components:
             last_page_full:
               type: array
               items:
-                type: number
+                type: integer
                 description: Timestamps at wich a PageBlock was started because the last PageBlock was full
                 example: 
                   - 1708532141
@@ -1413,7 +1422,7 @@ components:
             proc_reset:
               type: array
               items:
-                type: number
+                type: integer
                 description: Timestamps at wich a PageBlock was started because of a processor reset
                 example: 
                   - 1708532141
@@ -1421,7 +1430,7 @@ components:
             sensor_reset:
               type: array
               items:
-                type: number
+                type: integer
                 description: Timestamps at wich a PageBlock was started because of a sensor reset
                 example: 
                   - 1708532141
@@ -1429,7 +1438,7 @@ components:
             bytes_corrupt:
               type: array
               items:
-                type: number
+                type: integer
                 description: Timestamps at wich a PageBlock was started because of some corrupted bytes
                 example: 
                   - 1708532141
@@ -1444,7 +1453,7 @@ components:
                     description: Header code, causes of the new page block
                     example: 0xC0
                   time:
-                    type: number
+                    type: integer
                     description: Timestamps at wich a PageBlock was started because of this specific cause
                     example: 1708574369
         viewed:
@@ -1456,7 +1465,7 @@ components:
             type: object
             properties:
               time:
-                type: number
+                type: integer
                 description: Timestamps at which this device info should be considered
                 example: 1708532141
               info:
