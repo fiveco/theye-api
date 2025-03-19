@@ -1,13 +1,25 @@
 openapi: '3.0.2'
 info:
-  title: THEye API
-  description: "THEye backend server API description."
+  title: THEye backend server API
   termsOfService: https://theye.ch/en/terms
   version: '0.47.0'
+  description: |
+   **Welcome in the THEye ecosystem backend server API documentation**
+
+   This API description is divided in differents sections
+   - General: For general puprose endpoints.
+   - Gateway: For gateway specific endpoints.
+   - Mobile: For mobile app specific endpoints.
+   - Frontend: For web app specific endpoints.
+
+   The Frontend section is the base for a custom web or software client application.
+   You will find [here](/howto.html) more information how to use this API to build
+   a custom user interface.
   contact: 
     name: FiveCo Innovative Engineering
     url: https://www.fiveco.ch
     email: info@fiveco.ch
+  
 servers:
   - url: https://backend.theye.ch/api/v0
     description: Production server
@@ -16,6 +28,11 @@ servers:
 
 components:
   schemas:
+    auth-guide:
+      description: |  
+        ## Authentication
+        This API uses **oAuth** token authentication.
+        TBD
     api-version:
       type: object
       properties:
@@ -97,7 +114,7 @@ components:
           description: It must be registered as sensitive_redirect_uri.
     status:
       type: object
-      readOnly: True
+      readOnly: true
       properties:
         code:
           type: string
@@ -446,7 +463,7 @@ components:
         hardware:
           type: string
           example: 2.3
-          readOnly: True
+          readOnly: true
         is_active:
           type: boolean
           example: true
@@ -621,7 +638,7 @@ components:
               hardware:
                 type: string
                 example: "2.3"
-                readOnly: True
+                readOnly: true
               battery_voltage:
                 type: integer
                 description: Battery voltage in mV [V]
@@ -646,23 +663,34 @@ components:
       properties:
         is_free:
           type: boolean
-          example: True
+          description: Is the device free (not owned by anybody)?
+          example: true
         log:
           type: object
           properties:
             start_time_id:
               type: integer 
+              description: Last log id present on the server.
               example: 3141592 
             head_page_time_id:
               type: integer 
+              description: Last unsealed log page present on the server.
               example: 3200000
             head_pages_time_id:
               type: array
+              description: |
+                List of all unsealed pages present on the server.
+
+                **Remark**: The mobile app will check all of this page on the device
+                and retrieve the encrypted log from the oldest page still present on the device.
+                The time id of this oldest page will be returned to limit this list with pages
+                with a time id greater than this one in the next requests.
               items:
                 type: integer
                 example: 3200000
             need_synchronization:
               type: boolean
+              description: Should a new synchronization point be created?
               example: true
         status:
           $ref: '#/components/schemas/status'
@@ -848,12 +876,12 @@ components:
           description:
             Boolean to include or not the raw data table.
           type: boolean
-          default: False
+          default: false
         isSigned:
           description:
             Boolean to sign or not the pdf.
           type: boolean
-          default: False
+          default: false
     device-specification:
       type: object
       properties:
@@ -1678,7 +1706,7 @@ components:
         stripe_id:
           type: string 
           example: prod_loremipsum 
-          readOnly: True
+          readOnly: true
         name:
           type: string
           example: Pro 
@@ -1726,7 +1754,7 @@ components:
         stripe_id:
           type: string 
           example: price_loremipsum 
-          readOnly: True
+          readOnly: true
         currency:
           type: string
           example: chf 
@@ -1745,7 +1773,7 @@ components:
         stripe_id:
           type: string 
           example: prod_loremipsum 
-          readOnly: True
+          readOnly: true
         name:
           type: string
           example: Pro 
@@ -1764,25 +1792,25 @@ components:
         stripe_id:
           type: string 
           example: prod_loremipsum 
-          readOnly: True
+          readOnly: true
         quantity:
           type: string 
           example: prod_loremipsum 
-          readOnly: True
+          readOnly: true
         cancel_at_period_end:
           type: boolean 
-          example: False 
-          readOnly: True
+          example: false 
+          readOnly: true
         current_period_start:
             type: integer
             description: Time in POSIX 
             example: 0 
-            readOnly: True
+            readOnly: true
         current_period_end:
             type: integer
             description: Time in POSIX 
             example: 0 
-            readOnly: True
+            readOnly: true
         price:
           type: object 
           $ref : '#/components/schemas/price'
@@ -1797,7 +1825,7 @@ components:
         id:
           type: integer
           example: 314
-          readOnly: True
+          readOnly: true
         company:
           type: string
           example: Inc. 
@@ -1805,7 +1833,7 @@ components:
           type: string
           format:  email
           example: alice.wonderland@mail.com
-          readOnly: True
+          readOnly: true
         first_name:
           type: string
           example: Alice
@@ -1826,7 +1854,7 @@ components:
         currency:
           type: string
           example: chf 
-          readOnly: True
+          readOnly: true
         enable_elog_report:
           type: boolean
           description: "Set if an email is sent to user when new log data have been pushed to server."
@@ -1929,9 +1957,24 @@ components:
       type: openIdConnect
       openIdConnectUrl: 'https://backend.theye.ch/o/.well-known/openid-configuration'
 
+tags:
+  - name: General
+    description: Endpoints for general use
+  - name: Gateway
+    description: Endpoints reserved for Gateway operations
+  - name: Mobile
+    description: Endpoints reserved for Mobile App operations
+  - name: Frontend
+    description: Endpoints for frontend display (Web App) or clients custom access
+  - name: Production
+    description: Endpoints reserved for the production process.
+
 paths:
   /:
     get:
+      summary: API version
+      tags:
+        - General
       description: Get THEye Server and API versions. 
       responses:
         '200':
@@ -1942,6 +1985,9 @@ paths:
                 $ref : '#/components/schemas/api-version'
   /contact/:
     post:
+      summary: Post a contact formular
+      tags:
+        - Frontend
       description: Post a contact formular. 
       requestBody:
         description: Contact 
@@ -1971,6 +2017,9 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/:
     get:
+      summary: Get user devices
+      tags:
+        - Frontend
       description: Get all devices of the user.
       parameters:
         - name: owner #TODO should we really put this here ? As we have the security scheme
@@ -2015,7 +2064,10 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/set-all-logs-viewed/:
     put:
-      description: Set all logs of a devicelist as viewed by a user.
+      summary: Set all logs as viewed.
+      tags:
+        - Frontend
+      description: Set all logs of a device as viewed by a user.
       security:
         - theye_oauth:
           - write 
@@ -2042,7 +2094,10 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/summary/:
     get:
-      description: Get devices summary.
+      summary: Get devices summary
+      tags:
+        - Frontend
+      description: Get devices summary. TBD
       parameters:
         - name: owner 
           in : query
@@ -2087,9 +2142,12 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/concatenation/:
     post:
-      description: Post concatenation file request. 
+      summary: Request multiple device concatenation file
+      tags:
+        - Frontend
+      description: Post concatenation file request to retrieve a new file containing multiple 
+        devices logs in a table format.
       requestBody:
-        description: Encrypted device info 
         required: true
         content:
           application/json:
@@ -2112,7 +2170,12 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/files/{nonce-id}/status/:
     get:
-      description: Retrieve file creation task state
+      summary: Get file generation status
+      tags:
+        - Frontend
+      description: |
+       Retrieve server file generation task state. When finished, the file will
+       be available in [retrieve file](#path-/devices/files/{nonce-id}/file/)
       parameters:
         - name: nonce-id
           in: path
@@ -2145,6 +2208,9 @@ paths:
         '404':
           description: Not found (may be a bad nonce id)
     put:
+      summary: Cancel file generation
+      tags:
+        - Frontend
       description: Cancel celery task
       parameters:
         - name: nonce-id
@@ -2197,7 +2263,13 @@ paths:
           description: Not found (may be a bad nonce id)
   /devices/files/{nonce-id}/file/:
     get:
-      description: Retrieve created file (status must be finished=true)
+      summary: Retrieve a server generated file
+      tags:
+        - Frontend
+      description: Retrieve a file generated by the server 
+       ([status](#path-/devices/files/{nonce-id}/status/) must be finished=true)
+       by example by [concatenation](#path-/devices/concatenation/) or 
+       [certified document](#path-/devices/{device-id}/logs/{start-time-id}/certificate/).
       parameters:
         - name: nonce-id
           in: path
@@ -2230,7 +2302,10 @@ paths:
           description: Not found (may be a bad nonce id)
   /devices/{device-id}/:
     get:
-      description: Get device.
+      summary: Get device data
+      tags:
+        - Frontend
+      description: Get data for a specific device ID.
       parameters:
         - name: device-id
           in: path
@@ -2278,6 +2353,9 @@ paths:
               schema:
                 $ref : '#/components/schemas/status-response' 
     put:
+      summary: Put device data
+      tags:
+        - Frontend
       description: Put device.
       parameters:
         - name: device-id
@@ -2338,7 +2416,10 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/logs/{start-time-id}/certificate/:
     post:
-      description: Post certificate generation request. 
+      summary: Ask a certified document for a log
+      tags:
+        - Frontend
+      description: Post certified document generation request for a specific log. 
       parameters:
         - name: device-id
           in: path
@@ -2391,7 +2472,11 @@ paths:
                 $ref : '#/components/schemas/status-response'
   /devices/{device-id}/check-synchronization:
     put:
-      description: Check wheter the device is synchronized with the server or not.
+      summary: Check device time synchronization
+      tags:
+        - Gateway
+        - Mobile
+      description: Check whether the device time is synchronized with the server or not.
       parameters:
         - name: device-id
           in: path
@@ -2436,6 +2521,7 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/compute-access-token:
     put:
+      summary: TBD
       description: Compute and get the access token.
       parameters:
         - name: device-id
@@ -2492,6 +2578,7 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/compute-configuration-token:
     put:
+      summary: TBD
       description: Compute and get the configuration token.
       parameters:
         - name: device-id
@@ -2549,6 +2636,7 @@ paths:
 
   /devices/{device-id}/compute-factory-access-token:
     put:
+      summary: TBD
       description: Compute and get the factory access token.
       parameters:
         - name: device-id
@@ -2600,6 +2688,7 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/compute-factory-configuration-token:
     put:
+      summary: TBD
       description: Compute and get the factory access token.
       parameters:
         - name: device-id
@@ -2652,6 +2741,7 @@ paths:
 
   /devices/{device-id}/compute-lock-token:
     put:
+      summary: TBD
       description: Compute and get the device lock token.
       parameters:
         - name: device-id
@@ -2707,8 +2797,10 @@ paths:
               schema:
                 $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/devices-data/:
-    put:  
-      description: Allows a device (ex:Gateway) to put data of another device (THEye) on the server
+    put:
+      summary: TBD  
+      description: Allows a device (ex:Gateway) to put data of another device 
+        (THEye) on the server
       parameters:
         - name: device-id
           in: path
@@ -2765,6 +2857,9 @@ paths:
                 $ref : '#/components/schemas/status-response'
   /devices/{device-id}/set-all-logs-viewed/:
     put:
+      summary: Set all logs of a device as viewed
+      tags:
+        - Frontend
       description: Set all logs of a single device as viewed by a user.
       security:
         - theye_oauth:
@@ -2798,6 +2893,9 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/logs/:
     get:
+      summary: Retrieve logs of a device
+      tags:
+        - Frontend
       description: Get the list of logs of the device
       security:
         - theye_oauth:
@@ -2847,6 +2945,9 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/logs/{start-time-id}/:
     get:
+      summary: Get a specific log
+      tags:
+        - Frontend
       description: 
         Get the log data. If needed, the server will automtically adjust the 
         aggregation period to build a response containing less than the server
@@ -2936,10 +3037,10 @@ paths:
         - name: stat_only
           in: query 
           description: 
-            If True, only the stats are returned (min, max, mean, mkt).
+            If true, only the stats are returned (min, max, mean, mkt).
           schema:
             type: boolean 
-            default: False
+            default: false
         - name: activation_energy
           in: query 
           description: 
@@ -3041,7 +3142,15 @@ paths:
                 $ref : '#/components/schemas/status-response'
   /devices/{device-id}/own:
      put:
-      description: Own the device.
+      summary: Ask ownership on a device.
+      tags:
+        - Mobile
+      description: |
+        Ask ownership of a device. If the device is not owned by anybody,
+        and the ownsership token is valid, the user will be granted the ownership of the
+        device. 
+
+        **Remark**: If the device was never owned before, the ownership factory code is mandatory.
       parameters:
         - name: device-id
           in: path
@@ -3103,6 +3212,7 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/ownership-factory-code/:
     get:
+      summary: TBD
       description: Get the ownership factory code of the device
       security:
         - theye_oauth:
@@ -3153,7 +3263,12 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/release:
      put:
-      description: Release ownership of the device.
+      summary: Ask to release a device ownership.
+      tags:
+        - Frontend
+        - Mobile
+      description: Release ownership of the device. The device will be fried and any other user 
+        will be allowed to ask ownership on it.
       parameters:
         - name: device-id
           in: path
@@ -3202,6 +3317,10 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/public-info/:
      get:
+      summary: Get device public info
+      tags:
+        - Mobile
+        - Gateway
       description: Get public info about the theye-device.
       parameters:
         - name: device-id
@@ -3240,7 +3359,9 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/token/:
     post:
-      description: Create an Identification Token linked to a device if the server code in the request is valid. 
+      summary: TBD
+      description: Create an Identification Token linked to a device if the server 
+        code in the request is valid. 
       parameters:
         - name: device-id
           in: path
@@ -3291,6 +3412,9 @@ paths:
                 $ref : '#/components/schemas/status-response'
   /devices/{device-id}/update-fw-version/:
     get:
+      summary: Get new firmware url
+      tags:
+        - Gateway
       description: Get the download url of the target firmware version.
       parameters:
         - name: device-id
@@ -3340,7 +3464,11 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /device-info/:
     post:
-      description: Post encrypted device info. 
+      summary: Post encrypted device info
+      tags:
+        - Mobile
+        - Gateway
+      description: Post encrypted device info retrieved from the device. 
       requestBody:
         description: Encrypted device info 
         required: true
@@ -3387,6 +3515,9 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /discovery/device-specifications/:
     get:
+      summary: Get all devices specifications
+      tags:
+        - General
       description: Get device specification list. 
       responses:
         '200':
@@ -3397,7 +3528,10 @@ paths:
                 $ref : '#/components/schemas/device-specifications'
   /discovery/status/:
     get:
-      description: Get status list. 
+      summary: Get status list
+      tags:
+        - General
+      description: Not yet implemented. 
       responses:
         '200':
           description: OK
@@ -3408,8 +3542,15 @@ paths:
                 items:
                   $ref : '#/components/schemas/status'
   /my-client-configuration/:
-    get: 
-      description: Get the client configuration of the current user and the current application. 
+    get:
+      summary: Get client configuration 
+      tags:
+        - Frontend
+      description: |
+        Get the client configuration of the current user and the current application. 
+
+        **Remark**: This endpoint return a json with unstructured contents. It should not be used 
+        by a custom frontend.
       security:
         - theye_oauth:
           - read 
@@ -3441,6 +3582,9 @@ paths:
               schema:
                 $ref : '#/components/schemas/status-response' 
     put: 
+      summary: Put client configuration 
+      tags:
+        - Frontend
       description: Create or update the client configuration of the current user and the current application. 
       security:
         - theye_oauth:
@@ -3482,6 +3626,10 @@ paths:
 
   /elog/:
     put:
+      summary: Post new encrypted log data
+      tags:
+        - Gateway
+        - Mobile
       description: Put encrypted log
       requestBody:
         description: Encrypted data 
@@ -3523,6 +3671,9 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /ownership-code/: 
     post:
+      summary: Create an ownership code
+      tags:
+        - Mobile
       description: Create and get an ownership code. 
       security:
         - theye_oauth:
@@ -3544,6 +3695,9 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /password-reset:
     put:
+      summary: Ask to reset the user password
+      tags:
+        - Frontend
       description: Password reset.  
       requestBody:
         description: Password reset parameters. 
@@ -3585,7 +3739,11 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /password-reset/email/:
     post:
-      description: Create a password reset action and send a password reset link to the given email address. 
+      summary: TBD
+      tags:
+        - Frontend
+      description: Create a password reset action and send a password reset link to 
+        the given email address. 
       requestBody:
         description: Password reset parameters 
         required: true
@@ -3626,6 +3784,9 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /production/batches/:
     get:
+      summary: Get production batches
+      tags:
+        - Production
       description: Get production batches.
       security:
         - theye_oauth:
@@ -3647,7 +3808,10 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /production/batches/{batch_id}/:
     get:
-      description: Get production batch.
+      summary: Get a production batch
+      tags:
+        - Production
+      description: Get production batch by its ID.
       security:
         - theye_oauth:
           - read 
@@ -3674,7 +3838,10 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /production/batches/{batch_id}/configuration/:
     get:
-      description: Get production batch configuration.
+      summary: Get production batch configuration
+      tags:
+        - Production
+      description: Get a production batch configuration by batch id.
       security:
         - theye_oauth:
           - read 
@@ -3701,6 +3868,9 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /production/records/:
     get:
+      summary: Get production records
+      tags:
+        - Production
       description: Get production records.
       security:
         - theye_oauth:
@@ -3736,6 +3906,9 @@ paths:
               schema:
                 $ref : '#/components/schemas/status-response' 
     post:
+      summary: Post production records
+      tags:
+        - Production
       description: Create a production record. 
       security:
         - theye_oauth:
@@ -3776,7 +3949,10 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /profile/:
     get:
-      description: Get user profile.
+      summary: Get user profile
+      tags:
+        - Frontend
+      description: Get logged in user profile.
       security:
         - theye_oauth:
           - read 
@@ -3796,6 +3972,9 @@ paths:
               schema:
                 $ref : '#/components/schemas/status-response' 
     put:
+      summary: Put user profile
+      tags:
+        - Frontend
       description: Update the user profile.
       security:
         - theye_oauth:
@@ -3830,7 +4009,10 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /profile/delete:
     put:
-      description: Delete the user.
+      summary: Ask to delete a user.
+      tags:
+        - Frontend
+      description: Delete the user. All user data will be delete and owned devices will be fried.
       security:
         - theye_oauth:
           - write 
@@ -3865,7 +4047,10 @@ paths:
 
   /profile/email/:
     post:
-      description: Create a email change action. 
+      summary: Create an e-mail change action
+      tags:
+        - Frontend
+      description: Create a email change action. TBD
       security:
         - theye_oauth:
           - write
@@ -3905,6 +4090,9 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /profile/password/:
     put:
+      summary: Ask to update the user password
+      tags:
+        - Frontend
       description: Update the user password. 
       security:
         - theye_oauth:
@@ -3939,7 +4127,10 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /signup/:
     post:
-      description: Signup  
+      summary: Post a new user data
+      tags:
+        - Frontend
+      description: Signup  TBD 2nd phase
       requestBody:
         description: User informations 
         required: true
@@ -3981,7 +4172,11 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /signup/email/:
     post:
-      description: Send a verification link to the given email address. 
+      summary: Ask to create a new user
+      tags:
+        - Frontend
+      description: Ask to create a new user and send a verification code to 
+        the given email address. Signup 1st phase TBD
       requestBody:
         description: Email and client id 
         required: true
@@ -4022,6 +4217,9 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /subscription/checkout-session/:
     post:
+      summary: TBD
+      tags:
+        - Frontend
       description: Create a Stripe checkout session 
       security:
         - theye_oauth:
@@ -4062,6 +4260,9 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /subscription/portal-session/:
     post:
+      summary: TBD
+      tags:
+        - Frontend
       description: Create a Stripe portal session 
       security:
         - theye_oauth:
@@ -4102,6 +4303,9 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /subscription/my-subscription/:
     get:
+      summary: TBD
+      tags:
+        - Frontend
       description: Get the user current stripe subscription 
       security:
         - theye_oauth:
@@ -4129,6 +4333,9 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /subscription/plans/:
     get:
+      summary: TBD
+      tags:
+        - Frontend
       description: Get stripe plans (product and prices) 
       responses:
         '200':
@@ -4139,6 +4346,10 @@ paths:
                 $ref : '#/components/schemas/subscription-plans' 
   /synchronization-nonce/:
     post:
+      summary: Get a synchronization nonce.
+      tags:
+        - Mobile
+        - Gateway
       description: Get server nonce for server-device time synchronization. 
       responses:
         '201':
@@ -4150,7 +4361,13 @@ paths:
 
   /synchronization-points/:
      post:
-      description:  Create a server-device time synchronization point. 
+      summary: Create a synchronization point. TBD
+      tags:
+        - Mobile
+        - Gateway
+      description: |
+        Create a server-device time synchronization point based on nonce previously 
+        [retrieved](#path-/synchronization-nonce/). 
       parameters:
         - name: device-id
           in: path
@@ -4207,6 +4424,10 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /server-code-request/:
     post:
+      summary: Request a server code
+      tags:
+        - Mobile
+        - Gateway
       description:  Create a server code (and send it to the client making the request). 
       responses:
         '201':
