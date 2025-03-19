@@ -1,6 +1,6 @@
 openapi: '3.0.2'
 info:
-  title: API THEye
+  title: THEye API
   description: "THEye backend server API description."
   termsOfService: https://theye.ch/en/terms
   version: '0.47.0'
@@ -10,26 +10,9 @@ info:
     email: info@fiveco.ch
 servers:
   - url: https://backend.theye.ch/api/v0
-    description: Official production server
-    variables:
-      port:
-        default: "443"
-      basePath:
-        default: v0
+    description: Production server
   - url: https://staging.backend.theye.ch/api/v0
-    description: Official staging server
-    variables:
-      port:
-        default: "443"
-      basePath:
-        default: v0
-  - url: http://localhost:8000/api/v0
-    description: Local development server
-    variables:
-      port:
-        default: "8000"
-      basePath:
-        default: v0
+    description: Staging test server
 
 components:
   schemas:
@@ -4231,4 +4214,5 @@ paths:
           content:
             application/json:
               schema:
-                $ref : '#/components/schemas/server-code' 
+                $ref : '#/components/schemas/server-code'
+
