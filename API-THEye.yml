@@ -2763,8 +2763,10 @@ paths:
 
   /devices/{device-id}/compute-lock-token:
     put:
-      summary: TBD
-      description: Compute and get the device lock token.
+      summary: Compute lock tocken
+      tags:
+        - Mobile
+      description: Compute and get the device lock token to be able to unlock the device.
       parameters:
         - name: device-id
           in: path
