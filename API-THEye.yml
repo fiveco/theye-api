@@ -2327,6 +2327,7 @@ paths:
       summary: Get device data
       tags:
         - Frontend
+        - Mobile
       description: Get data for a specific device ID.
       parameters:
         - name: device-id
@@ -2543,8 +2544,10 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/compute-access-token:
     put:
-      summary: TBD
-      description: Compute and get the access token.
+      summary: Compute access (permission) token
+      tags:
+        - Mobile
+      description: Compute and get the access token based on key ID and lock code.
       parameters:
         - name: device-id
           in: path
@@ -2600,7 +2603,9 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/compute-configuration-token:
     put:
-      summary: TBD
+      summary: Get the configuration token
+      tags:
+        - Mobile
       description: Compute and get the configuration token.
       parameters:
         - name: device-id
@@ -2658,7 +2663,9 @@ paths:
 
   /devices/{device-id}/compute-factory-access-token:
     put:
-      summary: TBD
+      summary: Get the factory access token
+      tags:
+        - Mobile
       description: Compute and get the factory access token.
       parameters:
         - name: device-id
@@ -2710,7 +2717,9 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/compute-factory-configuration-token:
     put:
-      summary: TBD
+      summary: Get the factory access token
+      tags:
+        - Mobile
       description: Compute and get the factory access token.
       parameters:
         - name: device-id
@@ -2822,7 +2831,9 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/devices-data/:
     put:
-      summary: TBD  
+      summary: Put data of another device
+      tags:
+        - Gateway
       description: Allows a device (ex:Gateway) to put data of another device 
         (THEye) on the server
       parameters:
@@ -3110,7 +3121,11 @@ paths:
               schema:
                 $ref : '#/components/schemas/status-response' 
     put:
-      description: Put Log.
+      summary: Put updated log data
+      tags:
+        - Frontend
+      description: Put updated log data. Allow to change the log name, the time correction and 
+        the active state.
       parameters:
         - name: device-id
           in: path
@@ -3236,7 +3251,9 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/ownership-factory-code/:
     get:
-      summary: TBD
+      summary: Get the ownership factory code
+      tags:
+        - Production
       description: Get the ownership factory code of the device
       security:
         - theye_oauth:
@@ -3383,7 +3400,9 @@ paths:
                 $ref : '#/components/schemas/status-response' 
   /devices/{device-id}/token/:
     post:
-      summary: TBD
+      summary: Create an Identification Token
+      tags:
+        - Gateway
       description: Create an Identification Token linked to a device if the server 
         code in the request is valid. 
       parameters:
@@ -3541,7 +3560,9 @@ paths:
     get:
       summary: Get all devices specifications
       tags:
-        - General
+        - Mobile
+        - Frontend
+        - Gateway
       description: Get device specification list. 
       responses:
         '200':
@@ -3976,6 +3997,7 @@ paths:
       summary: Get user profile
       tags:
         - Frontend
+        - Mobile
       description: Get logged in user profile.
       security:
         - theye_oauth:
