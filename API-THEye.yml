@@ -2,7 +2,7 @@ openapi: '3.0.2'
 info:
   title: THEye backend server API
   termsOfService: https://theye.ch/en/terms
-  version: '0.49.0'
+  version: '0.49.4'
   description: |
    **Welcome in the THEye ecosystem backend server API documentation**
 
@@ -672,6 +672,10 @@ components:
         is_free:
           type: boolean
           description: Is the device free (not owned by anybody)?
+          example: true
+        was_owned:
+          type: boolean
+          description: Was the device owned by an user in the past?
           example: true
         log:
           type: object
