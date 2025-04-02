@@ -15,6 +15,9 @@ info:
    The Frontend section is the base for a custom web or software client application.
    You will find [here](/howto.html) more information how to use this API to build
    a custom user interface.
+
+   *WARNING*: This API is still under development. While we try to maintain backward 
+   compatibility, we do not guarantee it.
   contact: 
     name: FiveCo Innovative Engineering
     url: https://www.fiveco.ch
@@ -673,10 +676,6 @@ components:
           type: boolean
           description: Is the device free (not owned by anybody)?
           example: true
-        was_owned:
-          type: boolean
-          description: Was the device owned by an user in the past?
-          example: true
         log:
           type: object
           properties:
@@ -1000,10 +999,16 @@ components:
                       type: array
                       example: [0, 10, 90, 100]
                       description: Abscissa (RH) in [%Rh] 
+                      items:
+                        type: number
+                        format: float
                     accuracy: 
                       type: array
                       example: [7.5, 4.5, 4.5, 7.5]
                       description: Ordinate (ΔRH) in [%Rh] 
+                      items:
+                        type: number
+                        format: float
                 typical:
                   type: object
                   properties:
@@ -1011,10 +1016,16 @@ components:
                       type: array
                       example: [0, 10,  90, 100] 
                       description: Abscissa (RH) in [%Rh] 
+                      items:
+                        type: number
+                        format: float
                     accuracy: 
                       type: array
                       example: [4, 2, 2, 4]
                       description: Ordinate (ΔRH) in [%Rh] 
+                      items:
+                        type: number
+                        format: float
             humidity_drift: 
               type: number
               example: 0.25
@@ -1029,10 +1040,16 @@ components:
                       type: array
                       example: [-40, 0, 65, 125]
                       description: Abscissa (T) in [°C] 
+                      items:
+                        type: number
+                        format: float
                     accuracy: 
                       type: array
                       example: [1, 0.4, 0.4, 1]
                       description: Ordinate (ΔT) in [°C] 
+                      items:
+                        type: number
+                        format: float
                 typical:
                   type: object
                   properties:
@@ -1040,10 +1057,16 @@ components:
                       type: array
                       example: [-40, 0, 65, 125]
                       description: Abscissa (T) in [%Rh] 
+                      items:
+                        type: number
+                        format: float
                     accuracy: 
                       type: array
                       example: [0.6, 0.2, 0.2, 0.6]
                       description: Ordinate (ΔT) in [%Rh] 
+                      items:
+                        type: number
+                        format: float
             tempertature_drift: 
               type: number
               example: 0.03
@@ -1434,9 +1457,9 @@ components:
           items:
             type: array
             description: time pairs
-            example: 
-              - 1649721600
-              - 1651190400
+            example: [1649721600, 1651190400]
+            items:
+              type: integer
         new_pb_causes:
           type: object
           properties:
@@ -1971,10 +1994,11 @@ components:
   securitySchemes:
     theye_oauth:
       type: oauth2
+      description: oAuth2 Authorization Code Flow
       flows:
         authorizationCode:
-          authorizationUrl: 'https://backend.theye.ch/o/authorize'
-          tokenUrl: 'https://backend.theye.ch/o/token'
+          authorizationUrl: '/o/authorize'
+          tokenUrl: '/o/token'
           scopes:
             'openid': OpenId Connect scope
             'read': Can read 
@@ -2900,6 +2924,16 @@ paths:
       tags:
         - Frontend
       description: Set all logs of a single device as viewed by a user.
+      parameters:
+        - name: device-id
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: base16
+            maxLength: 12 
+            minLength: 12 
+            example: 0123456789AB 
       security:
         - theye_oauth:
           - write 
@@ -3861,6 +3895,13 @@ paths:
       tags:
         - Production
       description: Get production batch by its ID.
+      parameters:
+        - name: batch_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 100
       security:
         - theye_oauth:
           - read 
@@ -3891,6 +3932,13 @@ paths:
       tags:
         - Production
       description: Get a production batch configuration by batch id.
+      parameters:
+        - name: batch_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 100
       security:
         - theye_oauth:
           - read 
@@ -4519,7 +4567,7 @@ paths:
         [retrieved](#path-/synchronization-nonce/). 
       parameters:
         - name: device-id
-          in: path
+          in: header
           required: true
           schema:
             type: string 

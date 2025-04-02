@@ -1,1 +1,0 @@
-npx redoc-cli bundle API-THEye.yml -o "API-THEye.html"
